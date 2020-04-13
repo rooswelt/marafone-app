@@ -1,10 +1,6 @@
-<h1>Marafone</h1>
-
-<router-outlet></router-outlet>
-
-<!-- <button *ngIf="!(currentGame$ | async)" (click)="joinGame()">Collegati</button>
-
 <ng-container *ngIf="currentGame$ | async as currentGame">
+
+  <h3>{{currentName}}</h3>
   <button (click)="startGame()">Dai carte</button>
 
   <button (click)="check()">TEST Raccogli carte</button>
@@ -88,5 +84,6 @@
     </div>
   </div>
 
+</ng-container>
 
-</ng-container> -->
+<pre>{{currentGame$ | async | json}}</pre>

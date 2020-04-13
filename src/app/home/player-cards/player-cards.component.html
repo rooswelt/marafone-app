@@ -1,0 +1,6 @@
+<div *ngFor="let card of cards; let i = index">
+  <span>{{i}} - <app-card [card]="card"></app-card></span>
+  <span *ngIf="shouldPlay">
+    <button [disabled]="!canPlayCard(card)" (click)="playACard(i)">GIOCA</button>
+  </span>
+</div>

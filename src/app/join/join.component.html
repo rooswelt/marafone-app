@@ -1,0 +1,26 @@
+<ng-container *ngIf="!(currentGame$ | async)">
+  <input [formControl]="idCtrl" type="text" placeholder="Gioco">
+  <button [disabled]="idCtrl.invalid" (click)="selectGame()">Collegati</button>
+</ng-container>
+
+<ng-container *ngIf="currentGame$ | async as currentGame">
+  <div *ngIf="currentGame.player_1_name">
+    Sedia 1 - {{currentGame.player_1_name}} <button (click)="rejoin(1)">Recupera</button>
+  </div>
+  <div *ngIf="currentGame.player_2_name">
+    Sedia 2 - {{currentGame.player_2_name}} <button (click)="rejoin(2)">Recupera</button>
+  </div>
+  <div *ngIf="currentGame.player_3_name">
+    Sedia 3 - {{currentGame.player_3_name}} <button (click)="rejoin(3)">Recupera</button>
+  </div>
+  <div *ngIf="currentGame.player_4_name">
+    Sedia 4 - {{currentGame.player_4_name}} <button (click)="rejoin(4)">Recupera</button>
+  </div>
+  <form [formGroup]="joinForm" novalidate>
+    <select formControlName="position" placeholder="Sedia">
+      <option *ngFor="let seatNumber of availableSeats" [value]="seatNumber">Sedia {{seatNumber}}</option>
+    </select>
+    <input formControlName="name" placeholder="Nome">
+  </form>
+  <button [disabled]="joinForm.invalid" (click)="join()">Siediti</button>
+</ng-container>
