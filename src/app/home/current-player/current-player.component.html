@@ -1,0 +1,28 @@
+<div class="king-selection" *ngIf="shouldSetKing">
+  <h5>Scegli la briscola</h5>
+  <button (click)="setKing('B')">Bastoni</button>
+  <button (click)="setKing('C')">Coppe</button>
+  <button (click)="setKing('D')">Denari</button>
+  <button (click)="setKing('S')">Spade</button>
+</div>
+
+<div class="hand u-flex">
+  <div *ngFor="let card of player.hand; let i = index" class="card-container">
+    <label>
+      <input type="radio" *ngIf="canPlayCard(card)" [(ngModel)]="selectedCard" name="cards" [value]="card"
+        (change)="onCardSelected(card)" />
+      <span class="card" [ngClass]="{'card--disabled': !canPlayCard(card)}"
+        [style.background-image]="'url(assets/images/cards/' +card?.type+card?.value+ '.png)'">
+      </span>
+    </label>
+  </div>
+</div>
+
+<div class="actions u-flex-center" *ngIf="shouldPlay">
+  <button [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
+  <button *ngIf="!default" [disabled]="!selectedCard" (click)="playCard('Striscio')">Striscio</button>
+  <button *ngIf="!default" [disabled]="!selectedCard" (click)="playCard('Busso')">Busso</button>
+  <button *ngIf="!default" [disabled]="!selectedCard" (click)="playCard('Volo')">Volo</button>
+</div>
+
+<app-player class="u-flex-center" [player]="player"></app-player>

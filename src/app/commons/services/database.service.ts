@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firest
 import { BehaviorSubject, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { Card, Game } from '../models/game.model';
+import { Card, Game, Hint } from '../models/game.model';
 import { cardEquals, getWinningCard, pointsForTakes, shuffleCards } from '../utils/card.util';
 import { Sign } from './../models/game.model';
 
@@ -20,7 +20,8 @@ export class DatabaseService {
   partiteCollection = this.db.collection('partite');
 
   loadGame(id: string) {
-    this.db.collection<Game>("partite").doc(id).snapshotChanges().pipe(map(action => {
+    this.currentGame = this.db.collection<Game>("partite").doc(id);
+    this.currentGame.snapshotChanges().pipe(map(action => {
       const game = action.payload.data() as Game;
       const id = action.payload.id;
       return { id, ...game };
@@ -71,9 +72,10 @@ export class DatabaseService {
     return from(this.currentGame.update(game));
   }
 
-  playCard(playerPosition: number, card: Card): Observable<void> {
+  playCard(playerPosition: number, card: Card, hint: Hint = null): Observable<void> {
     return this.currentGame.valueChanges().pipe(take(1), map(game => {
       game[`player_${playerPosition}_card`] = card;
+      game[`player_${playerPosition}_hint`] = hint;
       game[`player_${playerPosition}_hand`] = game[`player_${playerPosition}_hand`].filter(c => !cardEquals(c, card));
       game.turn = playerPosition == 4 ? 1 : playerPosition + 1;
       if (!game.default) {

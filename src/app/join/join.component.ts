@@ -19,6 +19,8 @@ export class JoinComponent {
 
   idCtrl: FormControl = new FormControl("6X4HHRRqr5P91JD5D9oP", Validators.required);
 
+  asAdmin: boolean = false;
+
   joinForm: FormGroup;
   constructor(private fb: FormBuilder, private db: DatabaseService, private router: Router) {
     this._createForm();
@@ -45,12 +47,12 @@ export class JoinComponent {
 
   rejoin(position) {
     this.db.rejoin(position);
-    this.router.navigate(["/home"]);
+    this.router.navigate([this.asAdmin ? "/admin" : "/home"]);
   }
 
   join() {
     this.db.joinGame(this.joinForm.value.position, this.joinForm.value.name).subscribe(() => {
-      this.router.navigate(["/home"]);
+      this.router.navigate([this.asAdmin ? "/admin" : "/home"]);
     })
   }
 }

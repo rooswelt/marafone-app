@@ -1,0 +1,89 @@
+<ng-container *ngIf="currentGame$ | async as currentGame">
+
+  <h3>{{currentName}}</h3>
+  <button (click)="startGame()">Dai carte</button>
+
+  <button (click)="check()">TEST Raccogli carte</button>
+
+  <button (click)="finalCheck()">TEST Conta punti</button>
+
+  <h2>Tocca al giocatore {{currentGame.turn}}</h2>
+
+  <div *ngIf="!currentGame.king">
+    <h3>Scegli briscola</h3>
+    <button (click)="setKing('B')">Bastoni</button>
+    <button (click)="setKing('C')">Coppe</button>
+    <button (click)="setKing('D')">Denari</button>
+    <button (click)="setKing('S')">Spade</button>
+  </div>
+  <div *ngIf="currentGame.king">
+    <h3>Briscola di {{currentGame.king | sign}}</h3>
+
+    <div *ngIf="currentGame.default">
+      <h3>Comanda {{currentGame.default | sign}}</h3>
+    </div>
+
+    <div style="display: flex; justify-content: space-around; align-items: center;">
+      <div class="player">
+        <h3>Giocatore 1 - {{currentGame.player_1_name}}</h3>
+        <app-player-cards [default]="currentGame.default" [cards]="currentGame.player_1_hand"
+          (onPlay)="playCard(1, $event)" [shouldPlay]="currentGame.turn == 1"></app-player-cards>
+        <div *ngIf="currentGame.player_1_card">
+          <strong>Carta giocata: <app-card [card]="currentGame.player_1_card"></app-card></strong>
+        </div>
+      </div>
+      <div class="player">
+        <h3>Giocatore 2 - {{currentGame.player_2_name}}</h3>
+        <app-player-cards [default]="currentGame.default" [cards]="currentGame.player_2_hand"
+          (onPlay)="playCard(2, $event)" [shouldPlay]="currentGame.turn == 2"></app-player-cards>
+        <div *ngIf="currentGame.player_2_card">
+          <strong>Carta giocata: <app-card [card]="currentGame.player_2_card"></app-card></strong>
+        </div>
+      </div>
+      <div class="player">
+        <h3>Giocatore 3 - {{currentGame.player_3_name}}</h3>
+        <app-player-cards [default]="currentGame.default" [cards]="currentGame.player_3_hand"
+          (onPlay)="playCard(3, $event)" [shouldPlay]="currentGame.turn == 3"></app-player-cards>
+        <div *ngIf="currentGame.player_3_card">
+          <strong>Carta giocata: <app-card [card]="currentGame.player_3_card"></app-card></strong>
+        </div>
+      </div>
+      <div class="player">
+        <h3>Giocatore 4 - {{currentGame.player_4_name}}</h3>
+        <app-player-cards [default]="currentGame.default" [cards]="currentGame.player_4_hand"
+          (onPlay)="playCard(4, $event)" [shouldPlay]="currentGame.turn == 4"></app-player-cards>
+        <div *ngIf="currentGame.player_4_card">
+          <strong>Carta giocata: <app-card [card]="currentGame.player_4_card"></app-card></strong>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h5>Prese squadra 1</h5>
+      <span *ngFor="let take of currentGame.take_1">
+        <app-card [card]="take"></app-card>&nbsp;
+      </span>
+    </div>
+
+    <div>
+      <h5>Prese squadra 2</h5>
+      <span *ngFor="let take of currentGame.take_2">
+        <app-card [card]="take"></app-card>&nbsp;
+      </span>
+    </div>
+  </div>
+
+  <h5>Punti</h5>
+  <div>Giocatore 1 e 3: {{currentGame.score_1}}</div>
+  <div>Giocatore 2 e 4: {{currentGame.score_2}}</div>
+
+  <div *ngIf="currentGame.log">
+    <h5>Storico mano</h5>
+    <div *ngFor="let log of currentGame.log">
+      <pre>{{log | json}}</pre>
+    </div>
+  </div>
+
+</ng-container>
+
+<pre>{{currentGame$ | async | json}}</pre>

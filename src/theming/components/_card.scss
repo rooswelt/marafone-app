@@ -1,0 +1,26 @@
+.card {
+  display: inline-block;
+  width: 100px;
+  height: 165px;
+  border: 1px solid #666;
+  border-radius: .3em;
+  -moz-border-radius: .3em;
+  -webkit-border-radius: .3em;
+  -khtml-border-radius: .3em;
+  padding: .25em;
+  margin: 0 -20px;
+  position: relative;
+  background-color: #eaeaf0;
+  -moz-box-shadow: .2em .2em .5em #333;
+  -webkit-box-shadow: .2em .2em .5em #333;
+  box-shadow: .2em .2em .5em #333;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  &--disabled {
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+}

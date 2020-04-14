@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
-import { Card, Game, Sign } from './../commons/models/game.model';
-import { DatabaseService } from './../commons/services/database.service';
+import { Game, Sign } from '../commons/models/game.model';
+import { DatabaseService } from '../commons/services/database.service';
+import { getLeftPosition, getRightPosition, getTeamMatePosition } from '../commons/utils/game.util';
+import { Player } from './../commons/models/game.model';
 
 @Component({
   selector: 'app-home',
@@ -10,20 +13,39 @@ import { DatabaseService } from './../commons/services/database.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
+
   currentGame$: Observable<Game>;
 
-  currentName: string;
+  private currentPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
+  private teamMateSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
+  private leftPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
+  private rightPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
+
+  currentScore: number;
+  opponentsScore: number;
 
   constructor(private db: DatabaseService) {
     this.currentGame$ = this.db.currentGame$;
 
-    this.currentGame$.subscribe(game => {
-      this.currentName = game[`player_${this.db.currentPosition}_name`];
+    this.currentGame$.pipe(filter(game => !!game)).subscribe(game => {
+      this.currentPlayerSubject.next(new Player(game, this.db.currentPosition));
+      this.teamMateSubject.next(new Player(game, getTeamMatePosition(this.db.currentPosition)));
+      this.leftPlayerSubject.next(new Player(game, getLeftPosition(this.db.currentPosition)));
+      this.rightPlayerSubject.next(new Player(game, getRightPosition(this.db.currentPosition)));
+      if (this.db.currentPosition % 2 == 1) {
+        this.currentScore = game.score_1;
+        this.opponentsScore = game.score_2;
+      } else {
+        this.currentScore = game.score_2;
+        this.opponentsScore = game.score_1;
+      }
     })
   }
 
-  playCard(position: number, card: Card) {
-    this.db.playCard(position, card);
+  playCard({ card, hint }) {
+    this.db.playCard(this.db.currentPosition, card, hint).subscribe(() => {
+      console.log('Carta giocata', card);
+    });
   }
 
   startGame() {
@@ -34,11 +56,17 @@ export class HomeComponent {
     this.db.setKing(sign);
   }
 
-  check() {
-    this.db.check();
+  get currentPlayer$(): Observable<Player> {
+    return this.currentPlayerSubject.asObservable();
+  }
+  get teamMate$(): Observable<Player> {
+    return this.teamMateSubject.asObservable();
+  }
+  get leftPlayer$(): Observable<Player> {
+    return this.leftPlayerSubject.asObservable();
+  }
+  get rightPlayer$(): Observable<Player> {
+    return this.rightPlayerSubject.asObservable();
   }
 
-  finalCheck() {
-    this.db.checkFinish();
-  }
 }

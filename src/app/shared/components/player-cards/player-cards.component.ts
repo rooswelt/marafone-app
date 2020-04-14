@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Card, Sign } from '../../commons/models/game.model';
+import { Card, Sign } from '../../../commons/models/game.model';
 
 @Component({
   selector: 'app-player-cards',

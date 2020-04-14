@@ -1,0 +1,22 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.main-container {
+  position: absolute;
+  top: 64px;
+  left: 0px;
+  right: 0;
+  bottom: 0;
+}
+
+.push-right {
+  #sidebar {
+    left: 0 !important;
+  }
+}

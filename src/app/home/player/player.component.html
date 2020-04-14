@@ -1,0 +1,8 @@
+<span class="player" *ngIf="player" [ngClass]="{'player--active': player.active}">
+  <span class="player__name">
+    {{player.name}}
+  </span>
+  <span *ngIf="player.hint" class="player__hint">
+    {{player.hint}}
+  </span>
+</span>

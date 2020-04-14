@@ -8,7 +8,6 @@ import { NgxUiLoaderConfig, NgxUiLoaderHttpModule, NgxUiLoaderModule, SPINNER } 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeModule } from './home/home.module';
 import { SharedModule } from './shared/shared.module';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
@@ -31,7 +30,6 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     AngularFirestoreModule,
     HttpClientModule,
     SharedModule,
-    HomeModule,
     AppRoutingModule
   ],
   providers: [],

@@ -1,0 +1,10 @@
+// @import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+.mat-form-field,
+.mat-checkbox {
+  padding: 0 .5rem;
+}
+
+snack-bar-container.error {
+  background: red;
+  color: white;
+}

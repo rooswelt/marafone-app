@@ -23,4 +23,7 @@
     <input formControlName="name" placeholder="Nome">
   </form>
   <button [disabled]="joinForm.invalid" (click)="join()">Siediti</button>
+
+  <input type="checkbox" [(ngModel)]="asAdmin" name="asAdmin">
+  <label for="asAdmin">As admin</label>
 </ng-container>

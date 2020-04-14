@@ -1,0 +1,28 @@
+.card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hand {
+  margin: 20px 0;
+}
+
+[type=radio] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio]+span.card {
+  cursor: pointer;
+}
+
+/* CHECKED STYLES */
+input[type="radio"]:checked+span.card {
+  // border: 1px solid red;
+  transform: translateY(-15px);
+}

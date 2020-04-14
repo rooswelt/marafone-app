@@ -10,5 +10,9 @@ export class CardComponent {
 
   @Input()
   card: Card;
+
+  @Input()
+  disabled: boolean;
+
   constructor() { }
 }

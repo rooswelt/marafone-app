@@ -1,0 +1,12 @@
+.badge {
+
+  padding: 5px 15px;
+  border-radius: 25px;
+  color: var(--white);
+  background-color: var(--grey);
+  font-weight: bold;
+
+  &--admin {
+    background-color: var(--red);
+  }
+}

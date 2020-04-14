@@ -1,0 +1,107 @@
+
+@mixin removeLinkStyle {
+    &:visited,
+    &:active,
+    &:link {
+        text-decoration: none;
+        outline: none;
+    }
+}
+
+@mixin clearfix {
+    &::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+@mixin truncateText($width) {
+    width: $width;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+ 
+@mixin backgroundImage($path) {
+    background-image: url($path);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+@mixin fixedFooter($height, $bg-color) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 0 1.5rem;
+    background-color: $bg-color;
+    height: $height;
+}
+
+@mixin absHorizontalCenter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+}
+
+@mixin absVerticalCenter {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+}
+
+@mixin absCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+}
+
+// MEDIA QUERY MANAGER - MOBILE FIRST APPROACH
+/*
+    0 - 600px       Phone 
+    600 - 900px     Tablet
+    900 - 1200px    Tablet landscape
+    1200 - 1800px   Standard desktops [ Default style ]
+    1800px over     Big desktop
+    * - phone
+    * - tablet-portrait
+    * - tablet-landscape
+    * - big-desktop
+ 
+    !! N.B.: 1em = 16px
+*/
+
+@mixin respond($breakpoint) {
+
+    @if $breakpoint == phone {
+        @media (max-width: 37.5em) { 
+            @content;
+        }
+    } 
+    
+    @if $breakpoint == tablet-portrait {
+        @media (max-width: 56.25em) { 
+            @content;
+        }
+    }
+
+    @if $breakpoint == tablet-landscape {
+        @media (max-width: 75em) { 
+            @content;
+        }
+    }
+
+    @if $breakpoint == bigdesktop {
+        @media (min-width: 112.5em) { 
+            @content;
+        }
+    }
+}

@@ -17,12 +17,18 @@ const routes: Routes = [
         loadChildren: () => import('./join/join.module').then(mod => mod.JoinModule),
       },
       {
+        path: "admin",
+        loadChildren: () => import('./admin/admin.module').then(mod => mod.AdminModule),
+        canActivate: [JoinedGuard]
+      },
+      {
         path: "home",
         loadChildren: () => import('./home/home.module').then(mod => mod.HomeModule),
         canActivate: [JoinedGuard]
       }
     ]
   },
+  { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },
 
 ];
 
