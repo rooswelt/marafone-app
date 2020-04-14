@@ -30,7 +30,7 @@
   width: 100%;
 }
 
-.u-flex-full {
+.u-flex-between {
   display: flex !important;
   justify-content: space-between;
   align-items: center;
@@ -46,6 +46,11 @@
   align-items: center;
 }
 
+.u-flex-around {
+  display: flex !important;
+  justify-content: space-around;
+  align-items: center;
+}
 
 .u-push-right {
   #sidebar {

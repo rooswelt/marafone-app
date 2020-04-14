@@ -9,4 +9,8 @@
   &--admin {
     background-color: var(--red);
   }
+
+  &--active {
+    background-color: var(--green);
+  }
 }

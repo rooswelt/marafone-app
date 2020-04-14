@@ -1,21 +1,22 @@
 <ng-container *ngIf="currentGame$ | async as currentGame">
-  <div class="scores">
-    <h5 class="scores__title">Punti</h5>
+  <div class="u-flex-around">
+    <div>
+      <div *ngIf="currentGame.king">
+        Briscola <strong>{{currentGame.king | sign}}</strong>
+      </div>
+      <div *ngIf="currentGame.default">
+        Gioco di <strong>{{currentGame.default | sign}}</strong>
+      </div>
+    </div>
     <div class="scores__details">
-      <div>Noi: {{currentScore}}</div>
-      <div>Loro: {{opponentsScore}}</div>
+      <span>Noi: {{currentScore}}</span> - <span>Loro: {{opponentsScore}}</span>
     </div>
   </div>
-  <div *ngIf="currentGame.king">
-    Briscola {{currentGame.king | sign}}
-  </div>
-  <div *ngIf="currentGame.default">
-    Gioco di {{currentGame.default | sign}}
-  </div>
+
   <div class="u-flex-center">
     <app-player [player]="teamMate$ | async"></app-player>
   </div>
-  <div class="u-flex-full">
+  <div class="u-flex-around">
     <app-player [player]="leftPlayer$ | async"></app-player>
     <app-table [left]="(leftPlayer$ | async).card" [right]="(rightPlayer$ | async).card"
       [top]="(teamMate$ | async).card" [bottom]="(currentPlayer$ | async).card"></app-table>

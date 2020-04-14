@@ -4,7 +4,7 @@ import { BehaviorSubject, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import { Card, Game, Hint } from '../models/game.model';
-import { cardEquals, getWinningCard, pointsForTakes, shuffleCards } from '../utils/card.util';
+import { cardEquals, getWinningCard, pointsForTakes, shuffleCards, sortHand } from '../utils/card.util';
 import { Sign } from './../models/game.model';
 
 @Injectable({
@@ -47,13 +47,13 @@ export class DatabaseService {
     let deck = shuffleCards();
 
     return from(this.currentGame.update({
-      player_1_hand: deck.splice(0, 10),
+      player_1_hand: sortHand(deck.splice(0, 10)),
       player_1_card: null,
-      player_2_hand: deck.splice(0, 10),
+      player_2_hand: sortHand(deck.splice(0, 10)),
       player_2_card: null,
-      player_3_hand: deck.splice(0, 10),
+      player_3_hand: sortHand(deck.splice(0, 10)),
       player_3_card: null,
-      player_4_hand: deck.splice(0, 10),
+      player_4_hand: sortHand(deck.splice(0, 10)),
       player_4_card: null,
       king: null,
       default: null,
@@ -74,6 +74,12 @@ export class DatabaseService {
 
   playCard(playerPosition: number, card: Card, hint: Hint = null): Observable<void> {
     return this.currentGame.valueChanges().pipe(take(1), map(game => {
+
+      game[`player_1_hint`] = null;
+      game[`player_2_hint`] = null;
+      game[`player_3_hint`] = null;
+      game[`player_4_hint`] = null;
+
       game[`player_${playerPosition}_card`] = card;
       game[`player_${playerPosition}_hint`] = hint;
       game[`player_${playerPosition}_hand`] = game[`player_${playerPosition}_hand`].filter(c => !cardEquals(c, card));

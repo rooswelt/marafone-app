@@ -65,3 +65,11 @@ export function pointsForTakes(takes: Card[]): number {
   const points = (takes || []).map(c => cardPoints(c)).reduce((a, b) => a + b, 0)
   return Math.floor(points / 3);
 }
+
+export function sortHand(hand: Card[]): Card[] {
+  return hand.sort((c1, c2) => {
+    if (c1.type > c2.type) return 1;
+    if (c2.type > c1.type) return -1;
+    return c1.value - c2.value;
+  })
+}

@@ -1,12 +1,12 @@
 <div class="king-selection" *ngIf="shouldSetKing">
   <h5>Scegli la briscola</h5>
-  <button (click)="setKing('B')">Bastoni</button>
-  <button (click)="setKing('C')">Coppe</button>
-  <button (click)="setKing('D')">Denari</button>
-  <button (click)="setKing('S')">Spade</button>
+  <button class="button button--green" (click)="setKing('B')">Bastoni</button>
+  <button class="button button--red" (click)="setKing('C')">Coppe</button>
+  <button class="button button--yellow" (click)="setKing('D')">Denari</button>
+  <button class="button button--blue" (click)="setKing('S')">Spade</button>
 </div>
 
-<div class="hand u-flex">
+<div class="hand u-flex-center">
   <div *ngFor="let card of player.hand; let i = index" class="card-container">
     <label>
       <input type="radio" *ngIf="canPlayCard(card)" [(ngModel)]="selectedCard" name="cards" [value]="card"
@@ -19,10 +19,13 @@
 </div>
 
 <div class="actions u-flex-center" *ngIf="shouldPlay">
-  <button [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
-  <button *ngIf="!default" [disabled]="!selectedCard" (click)="playCard('Striscio')">Striscio</button>
-  <button *ngIf="!default" [disabled]="!selectedCard" (click)="playCard('Busso')">Busso</button>
-  <button *ngIf="!default" [disabled]="!selectedCard" (click)="playCard('Volo')">Volo</button>
+  <button class="button button--primary" [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
+  <button class="button button--primary" *ngIf="!default" [disabled]="!selectedCard"
+    (click)="playCard('Striscio')">Striscio</button>
+  <button class="button button--primary" *ngIf="!default" [disabled]="!selectedCard"
+    (click)="playCard('Busso')">Busso</button>
+  <button class="button button--primary" *ngIf="!default" [disabled]="!selectedCard"
+    (click)="playCard('Volo')">Volo</button>
 </div>
 
 <app-player class="u-flex-center" [player]="player"></app-player>
