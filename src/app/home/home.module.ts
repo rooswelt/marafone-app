@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 
 import { SharedModule } from '../shared/shared.module';
 import { CurrentPlayerComponent } from './current-player/current-player.component';
@@ -16,7 +18,9 @@ import { TableComponent } from './table/table.component';
     CommonModule,
     FormsModule,
     HomeRoutingModule,
-    SharedModule
+    SharedModule,
+    MatCardModule,
+    MatButtonModule
   ]
 })
 export class HomeModule { }

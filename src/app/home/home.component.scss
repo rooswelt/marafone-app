@@ -1,0 +1,19 @@
+.scores {
+  &__details {
+    position: fixed;
+    top: 0;
+    right: 5rem;
+  }
+}
+
+.game {
+  &__details {
+    position: fixed;
+    top: 0;
+    left: 5rem;
+  }
+}
+
+.takes {
+  margin: 10px 40px;
+}

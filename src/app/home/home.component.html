@@ -1,32 +1,65 @@
 <ng-container *ngIf="currentGame$ | async as currentGame">
-  <div class="u-flex-around">
-    <div>
-      <div *ngIf="currentGame.king">
-        Briscola <strong>{{currentGame.king | sign}}</strong>
-      </div>
-      <div *ngIf="currentGame.default">
-        Gioco di <strong>{{currentGame.default | sign}}</strong>
-      </div>
+  <div class="game__details">
+    <div *ngIf="currentGame.king">
+      Briscola <strong>{{currentGame.king | sign}}</strong> messa da <strong>{{starter?.name}}</strong>
     </div>
-    <div class="scores__details">
-      <span>Noi: {{currentScore}}</span> - <span>Loro: {{opponentsScore}}</span>
+    <div *ngIf="currentGame.default">
+      Gioco di <strong>{{currentGame.default | sign}}</strong>
     </div>
   </div>
-  <div class="u-flex-center mb-20">
-    <app-player [player]="teamMate$ | async"></app-player>
+  <div class="scores__details">
+    <table>
+      <tr>
+        <th>Noi</th>
+        <th>Loro</th>
+      </tr>
+      <tbody>
+        <tr *ngFor="let score of currentScore; let i = index">
+          <td>{{currentScore[i]}}</td>
+          <td>{{opponentsScore[i]}}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <div class="u-flex-around">
-    <app-player [player]="leftPlayer$ | async"></app-player>
-    <app-table [left]="(leftPlayer$ | async).card" [right]="(rightPlayer$ | async).card"
-      [top]="(teamMate$ | async).card" [bottom]="(currentPlayer$ | async).card"></app-table>
-    <app-player [player]="rightPlayer$ | async"></app-player>
+  <div *ngIf="!winnerTeam">
+
+    <div class="u-flex-center mb-20 mt-20">
+      <app-player [player]="teamMate$ | async"></app-player>
+    </div>
+    <div class="u-flex-around">
+      <app-player [player]="leftPlayer$ | async"></app-player>
+      <app-table [left]="(leftPlayer$ | async).card" [right]="(rightPlayer$ | async).card"
+        [top]="(teamMate$ | async).card" [bottom]="(currentPlayer$ | async).card"></app-table>
+      <app-player [player]="rightPlayer$ | async"></app-player>
+    </div>
+    <div class="u-flex-center">
+      <app-current-player [player]="currentPlayer$ | async" [default]="currentGame.default"
+        [shouldPlay]="currentGame.turn == (currentPlayer$ |async).position"
+        [shouldSetKing]="currentGame.turn == (currentPlayer$ |async).position && !currentGame.king"
+        (onPlayCard)="playCard($event)" (onSetKing)="setKing($event)">
+      </app-current-player>
+    </div>
   </div>
-  <div class="u-flex-center">
-    <app-current-player [player]="currentPlayer$ | async" [default]="currentGame.default"
-      [shouldPlay]="currentGame.turn == (currentPlayer$ |async).position"
-      [shouldSetKing]="currentGame.turn == (currentPlayer$ |async).position && !currentGame.king"
-      (onPlayCard)="playCard($event)" (onSetKing)="setKing($event)">
-    </app-current-player>
+  <mat-card *ngIf="winnerTeam" class="end-message">
+    <mat-card-header>Hai {{winnerTeam == currentTeam ? 'vinto' : 'perso'}}!!</mat-card-header>
+    <mat-card-content>
+      <button mat-raised-button color="primary" (click)="restart()">Ricomincia</button>
+    </mat-card-content>
+  </mat-card>
+  <div *ngIf="gameClosed">
+    <div class="takes">
+      <h5>Prese Noi</h5>
+      <span *ngFor="let take of currentTakes">
+        <app-card [card]="take"></app-card>&nbsp;
+      </span>
+    </div>
+
+    <div class="takes">
+      <h5>Prese Loro</h5>
+      <span *ngFor="let take of opponentTakes">
+        <app-card [card]="take"></app-card>&nbsp;
+      </span>
+    </div>
   </div>
 
 </ng-container>

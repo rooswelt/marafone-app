@@ -15,8 +15,9 @@ export interface Game {
   player_3_name: string;
   player_4_hand: Card[]
   player_4_name: string;
-  score_1: number;
-  score_2: number;
+  scores_1: number[];
+  scores_2: number[];
+  starter: number;
   player_1_card: Card;
   player_2_card: Card;
   player_3_card: Card;

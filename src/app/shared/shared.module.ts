@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { CardComponent } from './components/card/card.component';
 import { PlayerCardsComponent } from './components/player-cards/player-cards.component';
 import { SignPipe } from './pipes/sign.pipe';
-
-
 
 @NgModule({
   declarations: [
@@ -14,7 +14,9 @@ import { SignPipe } from './pipes/sign.pipe';
     SignPipe
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    MatDialogModule,
+    MatButtonModule,
   ],
   exports: [
     CardComponent,

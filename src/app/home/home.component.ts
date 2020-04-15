@@ -2,9 +2,16 @@ import { Component } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-import { Game, Sign } from '../commons/models/game.model';
+import { Card, Game, Sign } from '../commons/models/game.model';
+import { AlertService } from '../commons/services/alert.service';
 import { DatabaseService } from '../commons/services/database.service';
-import { getLeftPosition, getRightPosition, getTeamMatePosition } from '../commons/utils/game.util';
+import {
+  getGameWinner,
+  getLeftPosition,
+  getRightPosition,
+  getTeamMatePosition,
+  isGameClosed,
+} from '../commons/utils/game.util';
 import { Player } from './../commons/models/game.model';
 
 @Component({
@@ -15,16 +22,25 @@ import { Player } from './../commons/models/game.model';
 export class HomeComponent {
 
   currentGame$: Observable<Game>;
+  gameClosed: boolean = false;
 
   private currentPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
   private teamMateSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
   private leftPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
   private rightPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
 
-  currentScore: number;
-  opponentsScore: number;
+  currentScore: number[];
+  opponentsScore: number[];
 
-  constructor(private db: DatabaseService) {
+  currentTakes: Card[];
+  opponentTakes: Card[];
+
+  starter: Player;
+
+  currentTeam: number;
+  winnerTeam: number;
+
+  constructor(private db: DatabaseService, private alertService: AlertService) {
     this.currentGame$ = this.db.currentGame$;
 
     this.currentGame$.pipe(filter(game => !!game)).subscribe(game => {
@@ -32,13 +48,24 @@ export class HomeComponent {
       this.teamMateSubject.next(new Player(game, getTeamMatePosition(this.db.currentPosition)));
       this.leftPlayerSubject.next(new Player(game, getLeftPosition(this.db.currentPosition)));
       this.rightPlayerSubject.next(new Player(game, getRightPosition(this.db.currentPosition)));
-      if (this.db.currentPosition % 2 == 1) {
-        this.currentScore = game.score_1;
-        this.opponentsScore = game.score_2;
-      } else {
-        this.currentScore = game.score_2;
-        this.opponentsScore = game.score_1;
+      if (game.starter) {
+        this.starter = new Player(game, game.starter);
       }
+      if (this.db.currentPosition % 2 == 1) {
+        this.currentScore = game.scores_1;
+        this.opponentsScore = game.scores_2;
+        this.currentTakes = game.take_1;
+        this.opponentTakes = game.take_2;
+        this.currentTeam = 1;
+      } else {
+        this.currentScore = game.scores_2;
+        this.opponentsScore = game.scores_1;
+        this.currentTakes = game.take_2;
+        this.opponentTakes = game.take_1;
+        this.currentTeam = 2;
+      }
+      this.gameClosed = isGameClosed(game);
+      this.winnerTeam = getGameWinner(game);
     })
   }
 
@@ -48,12 +75,24 @@ export class HomeComponent {
     });
   }
 
-  startGame() {
-    this.db.giveCards();
+  startHand(oldStarter: number) {
+    this.db.giveCards(oldStarter);
   }
 
   setKing(sign: Sign) {
     this.db.setKing(sign);
+  }
+
+  setStarter(starter: number) {
+    this.db.setStarter(starter);
+  }
+
+  restart() {
+    this.alertService.showConfirmDialog('Conferma', 'Sei sicuro di voler ricominciare?').subscribe((confirm) => {
+      if (confirm) {
+        this.db.giveCards();
+      }
+    })
   }
 
   get currentPlayer$(): Observable<Player> {

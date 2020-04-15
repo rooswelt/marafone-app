@@ -1,4 +1,4 @@
-import { Game } from '../models/game.model';
+import { Card, Game } from '../models/game.model';
 
 export function getTeamMatePosition(currentPlayer: number): number {
   return ((currentPlayer + 2) % 4) || 4;
@@ -14,4 +14,23 @@ export function getRightPosition(currentPlayer: number): number {
 
 export function getTeamMateName(game: Game, currentPlayer: number): string {
   return game ? game[`player_${getTeamMatePosition(currentPlayer)}_name`] : "";
+}
+
+export function isGameClosed(game: Game): boolean {
+  return game && !game.player_1_hand.length && !game.player_3_hand.length && !game.player_3_hand.length && !game.player_4_hand.length;
+}
+
+export function getStarter(hand_1: Card[], hand_2: Card[], hand_3: Card[], hand_4: Card[]): number {
+  if (hand_1.find((c => c.type == 'D' && c.value == 4)) != null) return 1
+  if (hand_2.find((c => c.type == 'D' && c.value == 4)) != null) return 2
+  if (hand_3.find((c => c.type == 'D' && c.value == 4)) != null) return 3
+  if (hand_4.find((c => c.type == 'D' && c.value == 4)) != null) return 4
+}
+
+export function getGameWinner(game: Game): number {
+  if (game) {
+    if (game.scores_1.length > 0 && game.scores_1[game.scores_1.length - 1] > 40) return 1;
+    if (game.scores_2.length > 0 && game.scores_2[game.scores_2.length - 1] > 40) return 2;
+  }
+  return 0;
 }

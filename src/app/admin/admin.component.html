@@ -18,7 +18,8 @@
   </div>
   <div *ngIf="currentGame.king">
     <h3>Briscola di {{currentGame.king | sign}}</h3>
-
+  </div>
+  <div>
     <div *ngIf="currentGame.default">
       <h3>Comanda {{currentGame.default | sign}}</h3>
     </div>
@@ -74,8 +75,8 @@
   </div>
 
   <h5>Punti</h5>
-  <div>Giocatore 1 e 3: {{currentGame.score_1}}</div>
-  <div>Giocatore 2 e 4: {{currentGame.score_2}}</div>
+  <div>Giocatore 1 e 3: {{currentGame.scores_1 | json}}</div>
+  <div>Giocatore 2 e 4: {{currentGame.scores_2 | json}}</div>
 
   <div *ngIf="currentGame.log">
     <h5>Storico mano</h5>
