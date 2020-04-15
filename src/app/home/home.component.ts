@@ -107,5 +107,4 @@ export class HomeComponent {
   get rightPlayer$(): Observable<Player> {
     return this.rightPlayerSubject.asObservable();
   }
-
 }

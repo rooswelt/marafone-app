@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 
 import { CardComponent } from './components/card/card.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { PlayerCardsComponent } from './components/player-cards/player-cards.component';
 import { SignPipe } from './pipes/sign.pipe';
 
@@ -11,6 +12,7 @@ import { SignPipe } from './pipes/sign.pipe';
   declarations: [
     CardComponent,
     PlayerCardsComponent,
+    ConfirmDialogComponent,
     SignPipe
   ],
   imports: [
@@ -21,6 +23,7 @@ import { SignPipe } from './pipes/sign.pipe';
   exports: [
     CardComponent,
     PlayerCardsComponent,
+    ConfirmDialogComponent,
     SignPipe
   ],
   providers: [],
