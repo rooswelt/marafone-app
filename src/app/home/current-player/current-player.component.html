@@ -18,7 +18,7 @@
   </div>
 </div>
 
-<div class="actions u-flex-center" *ngIf="shouldPlay">
+<div class="actions u-flex-center" *ngIf="!shouldSetKing && shouldPlay">
   <button class="button button--primary" [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
   <button class="button button--primary" *ngIf="!default" [disabled]="!selectedCard"
     (click)="playCard('Striscio')">Striscio</button>
