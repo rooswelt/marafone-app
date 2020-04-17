@@ -16,7 +16,7 @@ export class AlertService {
     let snackBarRef = this.snackBar.open(
       message,
       "X",
-      Object.assign({ duration: 2000 }, snackBarConfig)
+      Object.assign({ duration: 5000 }, snackBarConfig)
     );
     snackBarRef.onAction().subscribe(() => {
       snackBarRef.dismiss();

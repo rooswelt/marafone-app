@@ -75,8 +75,8 @@ export class HomeComponent {
     });
   }
 
-  startHand(oldStarter: number) {
-    this.db.giveCards(oldStarter);
+  startHand() {
+    this.db.giveCards(this.starter.position);
   }
 
   setKing(sign: Sign) {

@@ -5,7 +5,7 @@ import { map, take } from 'rxjs/operators';
 
 import { Card, Game, Hint } from '../models/game.model';
 import { cardEquals, getWinningCard, pointsForTakes, shuffleCards, sortHand } from '../utils/card.util';
-import { getRightPosition, getStarter } from '../utils/game.util';
+import { getRightPosition, getStarter, isGameClosed } from '../utils/game.util';
 import { Sign } from './../models/game.model';
 import { AlertService } from './alert.service';
 
@@ -92,8 +92,15 @@ export class DatabaseService {
     return from(this.currentGame.update(game));
   }
 
-  playCard(playerPosition: number, card: Card, hint: Hint = null): Observable<void> {
+  playCard(playerPosition: number, card: Card, hint: Hint = null): Observable<boolean> {
     return this.currentGame.valueChanges().pipe(take(1), map(game => {
+
+      if (!game.default) {
+        game.player_1_card = null;
+        game.player_2_card = null;
+        game.player_3_card = null;
+        game.player_4_card = null;
+      }
 
       game[`player_1_hint`] = null;
       game[`player_2_hint`] = null;
@@ -109,9 +116,7 @@ export class DatabaseService {
       }
       const finish = this._check(game);
       this._saveGame(game);
-      if (finish) {
-        this.giveCards(game.starter);
-      }
+      return finish;
     }))
   }
 
@@ -157,10 +162,6 @@ export class DatabaseService {
         player_4_card: game.player_4_card
       });
 
-      game.player_1_card = null;
-      game.player_2_card = null;
-      game.player_3_card = null;
-      game.player_4_card = null;
       game.default = null;
 
       return this._checkFinish(game);
@@ -169,7 +170,7 @@ export class DatabaseService {
   }
 
   private _checkFinish(game: Game): boolean {
-    if (!game.player_1_hand.length && !game.player_2_hand.length && !game.player_3_hand.length && !game.player_4_hand.length) {
+    if (isGameClosed(game)) {
 
       let score_1 = pointsForTakes(game.take_1 || []);
       let score_2 = pointsForTakes(game.take_2 || []);

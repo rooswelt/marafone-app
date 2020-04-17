@@ -40,6 +40,16 @@
       </app-current-player>
     </div>
   </div>
+  <div class="finish u-flex-center" *ngIf="gameClosed">
+    <span class="finish__container u-center-text" *ngIf=" starter.position == (currentPlayer$ |async).position">
+      <h3>Mano finita - Dai le carte per cominciare una nuova mano</h3>
+      <button mat-raised-button color="primary" (click)="startHand()">Dai le carte</button>
+    </span>
+    <span class="finish__container" *ngIf=" starter.position != (currentPlayer$ |async).position">
+      <h3>Mano finita - Attendi che <strong>{{starter.name}}</strong> dia le carte</h3>
+    </span>
+
+  </div>
   <mat-card *ngIf="winnerTeam" class="end-message">
     <mat-card-header>Hai {{winnerTeam == currentTeam ? 'vinto' : 'perso'}}!!</mat-card-header>
     <mat-card-content>
