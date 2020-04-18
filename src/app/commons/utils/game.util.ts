@@ -17,7 +17,7 @@ export function getTeamMateName(game: Game, currentPlayer: number): string {
 }
 
 export function isGameClosed(game: Game): boolean {
-  return game && !game.player_1_hand.length && !game.player_3_hand.length && !game.player_3_hand.length && !game.player_4_hand.length;
+  return game && !game.player_1_hand.length && !game.player_2_hand.length && !game.player_3_hand.length && !game.player_4_hand.length;
 }
 
 export function getStarter(hand_1: Card[], hand_2: Card[], hand_3: Card[], hand_4: Card[]): number {
