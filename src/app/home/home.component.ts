@@ -10,6 +10,7 @@ import {
   getLeftPosition,
   getRightPosition,
   getTeamMatePosition,
+  getTeamNumber,
   isGameClosed,
 } from '../commons/utils/game.util';
 import { Player } from './../commons/models/game.model';
@@ -51,7 +52,7 @@ export class HomeComponent {
       if (game.starter) {
         this.starter = new Player(game, game.starter);
       }
-      if (this.db.currentPosition % 2 == 1) {
+      if (getTeamNumber(this.db.currentPosition) == 1) {
         this.currentScore = game.scores_1;
         this.opponentsScore = game.scores_2;
         this.currentTakes = game.take_1;

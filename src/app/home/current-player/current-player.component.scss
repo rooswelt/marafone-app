@@ -26,3 +26,9 @@ input[type="radio"]:checked+span.card {
   // border: 1px solid red;
   transform: translateY(-15px) scale(1.1);
 }
+
+.actions {
+  button {
+    margin: 0 2px;
+  }
+}

@@ -5,7 +5,7 @@ import { map, take } from 'rxjs/operators';
 
 import { Card, Game, Hint } from '../models/game.model';
 import { cardEquals, getWinningCard, pointsForTakes, shuffleCards, sortHand } from '../utils/card.util';
-import { getRightPosition, getStarter, isGameClosed } from '../utils/game.util';
+import { getRightPosition, getStarter, getTeamNumber, hasCricca, isGameClosed } from '../utils/game.util';
 import { Sign } from './../models/game.model';
 import { AlertService } from './alert.service';
 
@@ -71,8 +71,8 @@ export class DatabaseService {
       newStarter = getRightPosition(oldStarter)
     } else {
       newStarter = getStarter(newGame.player_1_hand, newGame.player_2_hand, newGame.player_3_hand, newGame.player_4_hand);
-      newGame.scores_1 = [];
-      newGame.scores_2 = [];
+      newGame.scores_1 = [0];
+      newGame.scores_2 = [0];
     }
     newGame.turn = newStarter;
     newGame.starter = newStarter;
@@ -80,8 +80,18 @@ export class DatabaseService {
     return from(this.currentGame.update(newGame))
   }
 
-  setKing(king: Sign): Observable<void> {
-    return from(this._saveGame({ king }));
+  setKing(king: Sign) {
+    this.currentGame.valueChanges().pipe(take(1)).subscribe(game => {
+      let newGame: Partial<Game> = { king };
+      if (hasCricca(king, game[`player_${this.currentPosition}_hand`])) {
+        if (getTeamNumber(this.currentPosition) == 1) {
+          newGame.scores_1 = [...game.scores_1, game.scores_1[game.scores_1.length - 1] + 3];
+        } else {
+          newGame.scores_2 = [...game.scores_2, game.scores_2[game.scores_2.length - 1] + 3];
+        }
+      }
+      this._saveGame(newGame);
+    });
   }
 
   setStarter(starter: number): Observable<void> {
