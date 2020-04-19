@@ -26,7 +26,6 @@
     </mat-card-content>
   </mat-card>
   <div *ngIf="!winnerTeam">
-
     <div class="u-flex-center mb-20 mt-20">
       <app-player [player]="teamMate$ | async"></app-player>
     </div>
@@ -40,30 +39,26 @@
       <app-current-player [player]="currentPlayer$ | async" [default]="currentGame.default" [king]="currentGame.king"
         [shouldPlay]="currentGame.turn == (currentPlayer$ |async).position"
         [shouldSetKing]="currentGame.turn == (currentPlayer$ |async).position && !currentGame.king"
-        (onPlayCard)="playCard($event)" (onSetKing)="setKing($event)">
+        [canForceClose]="canForceClose" (onPlayCard)="playCard($event)" (onSetKing)="setKing($event)"
+        (onForceClose)="forceClose()">
       </app-current-player>
     </div>
   </div>
-  <div class="finish u-flex-center" *ngIf="gameClosed">
-    <span class="finish__container u-center-text" *ngIf=" starter.position == (currentPlayer$ |async).position">
-      <h3>Mano finita - Dai le carte per cominciare una nuova mano</h3>
-      <button mat-raised-button color="primary" (click)="startHand()">Dai le carte</button>
-    </span>
-    <span class="finish__container" *ngIf=" starter.position != (currentPlayer$ |async).position">
-      <h3>Mano finita - Attendi che <strong>{{starter.name}}</strong> dia le carte</h3>
-    </span>
 
-  </div>
-  <mat-card *ngIf="winnerTeam" class="end-message">
-    <mat-card-header>Hai {{winnerTeam == currentTeam ? 'vinto' : 'perso'}}!!</mat-card-header>
-    <mat-card-content>
-      <button mat-raised-button color="primary" (click)="restart()">Ricomincia</button>
-    </mat-card-content>
-  </mat-card>
-  <div *ngIf="gameClosed">
+  <div *ngIf="gameClosed" style="margin-top: 75px;">
+
+    <div *ngIf="!winnerTeam" class="finish u-flex-center">
+      <span class="finish__container u-center-text" *ngIf=" starter.position == (currentPlayer$ |async).position">
+        <h3>Mano finita - Dai le carte per cominciare una nuova mano</h3>
+        <button mat-raised-button color="primary" (click)="startHand()">Dai le carte</button>
+      </span>
+      <span class="finish__container" *ngIf=" starter.position != (currentPlayer$ |async).position">
+        <h3>Mano finita - Attendi che <strong>{{starter.name}}</strong> dia le carte</h3>
+      </span>
+    </div>
     <div class="takes">
       <h3>Prese Noi - <strong>{{pointsForTakes(currentTakes)}} punti</strong><span
-          *ngIf="currentGame.last_take && (currentGame.last_take == ''+currentTeam)"> +1 dell'ultima presa</span></h3>
+          *ngIf="currentGame.last_take && (currentGame.last_take == currentTeam)"> +1 dell'ultima presa</span></h3>
       <span *ngFor="let take of currentTakes">
         <app-card [card]="take"></app-card>&nbsp;
       </span>
@@ -71,10 +66,17 @@
 
     <div class="takes">
       <h3>Prese Loro - <strong>{{pointsForTakes(opponentTakes)}} punti</strong><span
-          *ngIf="currentGame.last_take && (currentGame.last_take != ''+currentTeam)"> +1 dell'ultima presa</span></h3>
+          *ngIf="currentGame.last_take && (currentGame.last_take != currentTeam)"> +1 dell'ultima presa</span></h3>
       <span *ngFor="let take of opponentTakes">
         <app-card [card]="take"></app-card>&nbsp;
       </span>
+    </div>
+
+    <div *ngIf="winnerTeam" class="u-flex-center" style="flex-direction:column">
+      <h2>Hai {{winnerTeam == currentTeam ? 'vinto' : 'perso'}}!!</h2>
+      <img style="height: 250px;"
+        [src]="winnerTeam == currentTeam ? 'assets/images/winner.gif' : 'assets/images/looser.gif'">
+      <button mat-raised-button color="primary" (click)="restart()">Ricomincia una nuova partita</button>
     </div>
   </div>
 </ng-container>

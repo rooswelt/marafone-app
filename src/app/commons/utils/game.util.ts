@@ -1,4 +1,5 @@
 import { Card, Game, Sign } from '../models/game.model';
+import { TeamNumber } from './../models/game.model';
 
 export function getTeamMatePosition(currentPlayer: number): number {
   return ((currentPlayer + 2) % 4) || 4;
@@ -17,7 +18,7 @@ export function getTeamMateName(game: Game, currentPlayer: number): string {
 }
 
 export function isGameClosed(game: Game): boolean {
-  return game && !game.player_1_hand.length && !game.player_2_hand.length && !game.player_3_hand.length && !game.player_4_hand.length;
+  return game && game.force_closed || (!game.player_1_hand.length && !game.player_2_hand.length && !game.player_3_hand.length && !game.player_4_hand.length);
 }
 
 export function getStarter(hand_1: Card[], hand_2: Card[], hand_3: Card[], hand_4: Card[]): number {
@@ -27,12 +28,23 @@ export function getStarter(hand_1: Card[], hand_2: Card[], hand_3: Card[], hand_
   if (hand_4.find((c => c.type == 'D' && c.value == 4)) != null) return 4
 }
 
-export function getGameWinner(game: Game): number {
+export function getGameWinner(game: Game): TeamNumber {
   if (game) {
-    if (game.scores_1.length > 0 && game.scores_1[game.scores_1.length - 1] > 40) return 1;
-    if (game.scores_2.length > 0 && game.scores_2[game.scores_2.length - 1] > 40) return 2;
+    if (game.force_closed) {
+      if (game.force_closed_by == 1) return isTeamWinner(1, game) ? 1 : 2;
+      if (game.force_closed_by == 2) return isTeamWinner(2, game) ? 2 : 1;
+    }
+    if (isTeamWinner(1, game)) return 1;
+    if (isTeamWinner(2, game)) return 2;
   }
-  return 0;
+  return null;
+}
+
+function isTeamWinner(teamNumber: TeamNumber, game: Game): boolean {
+  if (game) {
+    return (game[`scores_${teamNumber}`].length && game[`scores_${teamNumber}`][game[`scores_${teamNumber}`].length - 1] > 40);
+  }
+  return false;
 }
 
 export function hasCricca(king: Sign, hand: Card[]): boolean {

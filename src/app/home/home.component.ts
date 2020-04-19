@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-import { Card, Game, Sign } from '../commons/models/game.model';
+import { Card, Game, Sign, TeamNumber } from '../commons/models/game.model';
 import { AlertService } from '../commons/services/alert.service';
 import { DatabaseService } from '../commons/services/database.service';
 import { pointsForTakes } from '../commons/utils/card.util';
@@ -39,8 +39,10 @@ export class HomeComponent {
 
   starter: Player;
 
-  currentTeam: number;
-  winnerTeam: number;
+  currentTeam: TeamNumber;
+  winnerTeam: TeamNumber;
+
+  canForceClose: boolean;
 
   constructor(private db: DatabaseService, private alertService: AlertService) {
     this.currentGame$ = this.db.currentGame$;
@@ -66,6 +68,7 @@ export class HomeComponent {
         this.opponentTakes = game.take_1;
         this.currentTeam = 2;
       }
+      this.canForceClose = this.currentScore[this.currentScore.length - 1] > 30;
       this.gameClosed = isGameClosed(game);
       this.winnerTeam = getGameWinner(game);
     })
@@ -87,6 +90,10 @@ export class HomeComponent {
 
   setStarter(starter: number) {
     this.db.setStarter(starter);
+  }
+
+  forceClose() {
+    this.db.forceClose(this.currentTeam);
   }
 
   restart() {

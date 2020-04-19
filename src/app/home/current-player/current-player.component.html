@@ -27,5 +27,8 @@
   <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
     (click)="playCard('Volo')">Volo</button>
 </div>
+<div *ngIf="canForceClose" class="u-flex-center" style="margin: 25px;">
+  <button mat-raised-button color="accent" (click)="forceClose()">Chiamati Fuori</button>
+</div>
 
 <app-player class="u-flex-center" style="margin-top: 20px;" [player]="player"></app-player>

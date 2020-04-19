@@ -3,7 +3,7 @@ import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firest
 import { BehaviorSubject, from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
-import { Card, Game, Hint } from '../models/game.model';
+import { Card, Game, Hint, TeamNumber } from '../models/game.model';
 import { cardEquals, getWinningCard, pointsForTakes, shuffleCards, sortHand } from '../utils/card.util';
 import { getRightPosition, getStarter, getTeamNumber, hasCricca, isGameClosed } from '../utils/game.util';
 import { Sign } from './../models/game.model';
@@ -62,6 +62,8 @@ export class DatabaseService {
       default: null,
       log: null,
       last_take: null,
+      force_closed: null,
+      force_closed_by: null,
       take_1: null,
       take_2: null
     }
@@ -96,6 +98,16 @@ export class DatabaseService {
 
   setStarter(starter: number): Observable<void> {
     return from(this._saveGame({ starter }));
+  }
+
+  forceClose(force_closer: TeamNumber) {
+    this.currentGame.valueChanges().pipe(take(1)).subscribe(game => {
+      game.force_closed = true;
+      game.force_closed_by = force_closer;
+      game.last_take = null;
+      this._checkFinish(game);
+      this._saveGame(game);
+    });
   }
 
   private _saveGame(game: Partial<Game>): Observable<void> {
@@ -139,25 +151,25 @@ export class DatabaseService {
       if (cardEquals(winningCard, game.player_1_card)) {
         game.turn = 1;
         game.take_1 = [...game.take_1 || [], ...table];
-        game.last_take = "1";
+        game.last_take = 1;
         winner = game.player_1_name;
       }
       if (cardEquals(winningCard, game.player_2_card)) {
         game.turn = 2;
         game.take_2 = [...game.take_2 || [], ...table];
-        game.last_take = "2";
+        game.last_take = 2;
         winner = game.player_2_name;
       }
       if (cardEquals(winningCard, game.player_3_card)) {
         game.turn = 3;
         game.take_1 = [...game.take_1 || [], ...table];
-        game.last_take = "1";
+        game.last_take = 1;
         winner = game.player_3_name;
       }
       if (cardEquals(winningCard, game.player_4_card)) {
         game.turn = 4;
         game.take_2 = [...game.take_2 || [], ...table];
-        game.last_take = "2";
+        game.last_take = 2;
         winner = game.player_4_name;
       }
 
@@ -198,8 +210,8 @@ export class DatabaseService {
           score_2 += game.scores_2[game.scores_2.length - 1];
       }
 
-      if (game.last_take == "1") score_1++;
-      if (game.last_take == "2") score_2++;
+      if (game.last_take == 1) score_1++;
+      if (game.last_take == 2) score_2++;
       game.scores_1.push(score_1);
       game.scores_2.push(score_2);
       return true;

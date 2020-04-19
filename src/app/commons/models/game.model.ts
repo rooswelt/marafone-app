@@ -1,5 +1,6 @@
 export type Sign = "D" | "B" | "C" | "S";
 export type Hint = "Striscio" | "Busso" | "Volo";
+export type TeamNumber = 1 | 2;
 
 export interface Card {
   value: number,
@@ -31,7 +32,9 @@ export interface Game {
   turn: number;
   king: Sign;
   default: Sign;
-  last_take: "1" | "2";
+  last_take: TeamNumber;
+  force_closed: boolean;
+  force_closed_by: TeamNumber;
   log: {
     default: Sign;
     player_1_card: Card;

@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Card, Player, Sign } from 'src/app/commons/models/game.model';
 
 import { Hint } from './../../commons/models/game.model';
+import { AlertService } from './../../commons/services/alert.service';
 
 @Component({
   selector: 'app-current-player',
@@ -25,15 +26,21 @@ export class CurrentPlayerComponent {
   @Input()
   shouldSetKing: boolean;
 
+  @Input()
+  canForceClose: boolean;
+
   @Output()
   onPlayCard: EventEmitter<{ card: Card, hint: Hint }> = new EventEmitter<{ card: Card, hint: Hint }>();
 
   @Output()
   onSetKing: EventEmitter<Sign> = new EventEmitter<Sign>();
 
+  @Output()
+  onForceClose: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   selectedCard: Card;
 
-  constructor() { }
+  constructor(private alertService: AlertService) { }
 
   playCard(hint: Hint = null) {
     if (this.selectedCard) {
@@ -60,5 +67,13 @@ export class CurrentPlayerComponent {
 
   onCardSelected(card: Card) {
     this.selectedCard = card;
+  }
+
+  forceClose() {
+    this.alertService.showConfirmDialog('Conferma', 'Sei sicuro di voler chiamarti fuori? Se non hai raggiunto almeno 41 punti perderai la partita!').subscribe(confirm => {
+      if (confirm) {
+        this.onForceClose.emit(true);
+      }
+    })
   }
 }
