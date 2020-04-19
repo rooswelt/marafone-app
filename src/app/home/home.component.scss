@@ -1,7 +1,7 @@
 .scores {
   &__details {
     position: fixed;
-    top: 0;
+    top: 5px;
     right: 5rem;
   }
 }
@@ -9,7 +9,7 @@
 .game {
   &__details {
     position: fixed;
-    top: 0;
+    top: 5px;
     left: 5rem;
   }
 }

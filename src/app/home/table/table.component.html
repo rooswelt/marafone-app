@@ -1,12 +1,12 @@
 <div class="table">
   <div class="u-flex-center row row--top">
-    <app-card [card]="top"></app-card>
+    <app-card [card]="top" [isKing]="king == top?.type"></app-card>
   </div>
   <div class="u-flex-between row row--center">
-    <app-card [card]="left" class="u-rotate"></app-card>
-    <app-card [card]="right" class="u-rotate"></app-card>
+    <app-card [card]="left" class="u-rotate" [isKing]="king == left?.type"></app-card>
+    <app-card [card]="right" class="u-rotate" [isKing]="king == right?.type"></app-card>
   </div>
   <div class="u-flex-center row row--top">
-    <app-card [card]="bottom"></app-card>
+    <app-card [card]="bottom" [isKing]="king == bottom?.type"></app-card>
   </div>
 </div>

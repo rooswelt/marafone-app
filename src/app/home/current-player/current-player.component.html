@@ -11,7 +11,7 @@
     <label>
       <input type="radio" *ngIf="canPlayCard(card)" [(ngModel)]="selectedCard" name="cards" [value]="card"
         (change)="onCardSelected(card)" />
-      <span class="card" [ngClass]="{'card--disabled': !canPlayCard(card)}"
+      <span class="card" [ngClass]="{'card--disabled': !canPlayCard(card), 'card--king': king == card.type}"
         [style.background-image]="'url(assets/images/cards/' +card?.type+card?.value+ '.png)'">
       </span>
     </label>
@@ -19,13 +19,13 @@
 </div>
 
 <div class="actions u-flex-center" *ngIf="!shouldSetKing && shouldPlay">
-  <button class="button button--primary" [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
-  <button class="button button--primary" *ngIf="!default" [disabled]="!selectedCard"
+  <button mat-raised-button color="primary" [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
+  <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
     (click)="playCard('Striscio')">Striscio</button>
-  <button class="button button--primary" *ngIf="!default" [disabled]="!selectedCard"
+  <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
     (click)="playCard('Busso')">Busso</button>
-  <button class="button button--primary" *ngIf="!default" [disabled]="!selectedCard"
+  <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
     (click)="playCard('Volo')">Volo</button>
 </div>
 
-<app-player class="u-flex-center" [player]="player"></app-player>
+<app-player class="u-flex-center" style="margin-top: 20px;" [player]="player"></app-player>

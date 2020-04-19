@@ -1,4 +1,4 @@
-<span class="card" [ngClass]="{'card--disabled': disabled}"
+<span class="card" [ngClass]="{'card--disabled': disabled, 'card--king': isKing}"
   [style.background-image]="card ? 'url(assets/images/cards/' +card?.type+card?.value+ '.png)' : ''">
   <!-- <span class="card__content" *ngIf="card">
     <span class="card__value">{{card.value}}</span> di <span class="card__type">{{card.type | sign}}</span>

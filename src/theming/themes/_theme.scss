@@ -3,16 +3,16 @@
 
 @include mat-core();
 
-$professionisti-theme-primary: mat-palette($professionisti-primary);
-$professionisti-theme-accent: mat-palette($professionisti-accent);
-$professionisti-theme-warn: mat-palette($professionisti-warn);
+$marafone-theme-primary: mat-palette($md-primary);
+$marafone-theme-accent: mat-palette($md-accent);
+$marafone-theme-warn: mat-palette($md-warn);
 
-$professionisti-theme: mat-light-theme($professionisti-theme-primary,
-  $professionisti-theme-accent,
-  $professionisti-theme-warn);
+$marafone-theme: mat-light-theme($marafone-theme-primary,
+  $marafone-theme-accent,
+  $marafone-theme-warn);
 
-@include angular-material-theme($professionisti-theme);
+@include angular-material-theme($marafone-theme);
 
-$primary: mat-color($professionisti-theme-primary);
-$accent: mat-color($professionisti-theme-accent);
-$warn: mat-color($professionisti-theme-warn);
+$primary: mat-color($marafone-theme-primary);
+$accent: mat-color($marafone-theme-accent);
+$warn: mat-color($marafone-theme-warn);

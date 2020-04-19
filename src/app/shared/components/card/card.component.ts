@@ -14,5 +14,8 @@ export class CardComponent {
   @Input()
   disabled: boolean;
 
+  @Input()
+  isKing: boolean;
+
   constructor() { }
 }

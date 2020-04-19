@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Card } from 'src/app/commons/models/game.model';
+import { Card, Sign } from 'src/app/commons/models/game.model';
 
 @Component({
   selector: 'app-table',
@@ -16,6 +16,8 @@ export class TableComponent {
   top: Card;
   @Input()
   bottom: Card;
+  @Input()
+  king: Sign;
 
   constructor() { }
 

@@ -1,26 +1,30 @@
 <ng-container *ngIf="currentGame$ | async as currentGame">
-  <div class="game__details">
-    <div *ngIf="currentGame.king">
-      Briscola <strong>{{currentGame.king | sign}}</strong> messa da <strong>{{starter?.name}}</strong>
-    </div>
-    <div *ngIf="currentGame.default">
-      Gioco di <strong>{{currentGame.default | sign}}</strong>
-    </div>
-  </div>
-  <div class="scores__details">
-    <table>
-      <tr>
-        <th>Noi</th>
-        <th>Loro</th>
-      </tr>
-      <tbody>
-        <tr *ngFor="let score of currentScore; let i = index">
-          <td>{{currentScore[i]}}</td>
-          <td>{{opponentsScore[i]}}</td>
+  <mat-card class="game__details">
+    <mat-card-content>
+      <div *ngIf="currentGame.king">
+        Briscola <strong>{{currentGame.king | sign}}</strong> messa da <strong>{{starter?.name}}</strong>
+      </div>
+      <div *ngIf="currentGame.default">
+        Gioco di <strong>{{currentGame.default | sign}}</strong>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="scores__details">
+    <mat-card-content>
+      <table>
+        <tr>
+          <th>Noi</th>
+          <th>Loro</th>
         </tr>
-      </tbody>
-    </table>
-  </div>
+        <tbody>
+          <tr *ngFor="let score of currentScore; let i = index">
+            <td>{{currentScore[i]}}</td>
+            <td>{{opponentsScore[i]}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card-content>
+  </mat-card>
   <div *ngIf="!winnerTeam">
 
     <div class="u-flex-center mb-20 mt-20">
@@ -29,11 +33,11 @@
     <div class="u-flex-around">
       <app-player [player]="leftPlayer$ | async"></app-player>
       <app-table [left]="(leftPlayer$ | async).card" [right]="(rightPlayer$ | async).card"
-        [top]="(teamMate$ | async).card" [bottom]="(currentPlayer$ | async).card"></app-table>
+        [top]="(teamMate$ | async).card" [bottom]="(currentPlayer$ | async).card" [king]="currentGame.king"></app-table>
       <app-player [player]="rightPlayer$ | async"></app-player>
     </div>
     <div class="u-flex-center">
-      <app-current-player [player]="currentPlayer$ | async" [default]="currentGame.default"
+      <app-current-player [player]="currentPlayer$ | async" [default]="currentGame.default" [king]="currentGame.king"
         [shouldPlay]="currentGame.turn == (currentPlayer$ |async).position"
         [shouldSetKing]="currentGame.turn == (currentPlayer$ |async).position && !currentGame.king"
         (onPlayCard)="playCard($event)" (onSetKing)="setKing($event)">

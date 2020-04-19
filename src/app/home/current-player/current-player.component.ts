@@ -17,6 +17,9 @@ export class CurrentPlayerComponent {
   default: Sign;
 
   @Input()
+  king: Sign;
+
+  @Input()
   shouldPlay: boolean;
 
   @Input()
