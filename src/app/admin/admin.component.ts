@@ -4,6 +4,7 @@ import { filter } from 'rxjs/operators';
 
 import { Card, Game, Hint, Sign } from '../commons/models/game.model';
 import { DatabaseService } from '../commons/services/database.service';
+import { pointsForTakes } from '../commons/utils/card.util';
 
 @Component({
   selector: 'app-admin',
@@ -44,4 +45,6 @@ export class AdminComponent {
   finalCheck() {
     this.db.checkFinish();
   }
+
+  pointsForTakes = pointsForTakes
 }

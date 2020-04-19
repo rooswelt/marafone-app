@@ -62,18 +62,19 @@
   </mat-card>
   <div *ngIf="gameClosed">
     <div class="takes">
-      <h5>Prese Noi</h5>
+      <h3>Prese Noi - <strong>{{pointsForTakes(currentTakes)}} punti</strong><span
+          *ngIf="currentGame.last_take && (currentGame.last_take == ''+currentTeam)"> +1 dell'ultima presa</span></h3>
       <span *ngFor="let take of currentTakes">
         <app-card [card]="take"></app-card>&nbsp;
       </span>
     </div>
 
     <div class="takes">
-      <h5>Prese Loro</h5>
+      <h3>Prese Loro - <strong>{{pointsForTakes(opponentTakes)}} punti</strong><span
+          *ngIf="currentGame.last_take && (currentGame.last_take != ''+currentTeam)"> +1 dell'ultima presa</span></h3>
       <span *ngFor="let take of opponentTakes">
         <app-card [card]="take"></app-card>&nbsp;
       </span>
     </div>
   </div>
-
 </ng-container>

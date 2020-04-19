@@ -60,14 +60,14 @@
     </div>
 
     <div>
-      <h5>Prese squadra 1</h5>
+      <h4>Prese squadra 1 - <strong>{{pointsForTakes(currentGame.take_1)}} punti</strong></h4>
       <span *ngFor="let take of currentGame.take_1">
         <app-card [card]="take"></app-card>&nbsp;
       </span>
     </div>
 
     <div>
-      <h5>Prese squadra 2</h5>
+      <h4>Prese squadra 2 - <strong>{{pointsForTakes(currentGame.take_2)}} punti</strong></h4>
       <span *ngFor="let take of currentGame.take_2">
         <app-card [card]="take"></app-card>&nbsp;
       </span>

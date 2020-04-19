@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { Card, Game, Sign } from '../commons/models/game.model';
 import { AlertService } from '../commons/services/alert.service';
 import { DatabaseService } from '../commons/services/database.service';
+import { pointsForTakes } from '../commons/utils/card.util';
 import {
   getGameWinner,
   getLeftPosition,
@@ -108,4 +109,6 @@ export class HomeComponent {
   get rightPlayer$(): Observable<Player> {
     return this.rightPlayerSubject.asObservable();
   }
+
+  pointsForTakes = pointsForTakes
 }
