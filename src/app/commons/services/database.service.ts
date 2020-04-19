@@ -122,12 +122,11 @@ export class DatabaseService {
         game.player_2_card = null;
         game.player_3_card = null;
         game.player_4_card = null;
+        game.player_1_hint = null;
+        game.player_2_hint = null;
+        game.player_3_hint = null;
+        game.player_4_hint = null;
       }
-
-      game[`player_1_hint`] = null;
-      game[`player_2_hint`] = null;
-      game[`player_3_hint`] = null;
-      game[`player_4_hint`] = null;
 
       game[`player_${playerPosition}_card`] = card;
       game[`player_${playerPosition}_hint`] = hint;
