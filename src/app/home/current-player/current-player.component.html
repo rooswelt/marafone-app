@@ -12,7 +12,7 @@
       <input type="radio" *ngIf="canPlayCard(card)" [(ngModel)]="selectedCard" name="cards" [value]="card"
         (change)="onCardSelected(card)" />
       <span class="card" [ngClass]="{'card--disabled': !canPlayCard(card), 'card--king': king == card.type}"
-        [style.background-image]="'url(assets/images/cards/' +card?.type+card?.value+ '.png)'">
+        [style.background-image]="'url(assets/images/cards/' +card?.type+card?.value+ '.jpeg)'">
       </span>
     </label>
   </div>
