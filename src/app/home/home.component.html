@@ -1,4 +1,4 @@
-<ng-container *ngIf="currentGame$ | async as currentGame">
+<ng-container *ngIf="currentGame">
   <mat-card class="game__details">
     <mat-card-content>
       <div *ngIf="currentGame.king">
@@ -27,18 +27,18 @@
   </mat-card>
   <div *ngIf="!winnerTeam">
     <div class="u-flex-center mb-20 mt-20">
-      <app-player [player]="teamMate$ | async"></app-player>
+      <app-player [player]="teamMate"></app-player>
     </div>
     <div class="u-flex-around">
-      <app-player [player]="leftPlayer$ | async"></app-player>
-      <app-table [left]="(leftPlayer$ | async).card" [right]="(rightPlayer$ | async).card"
-        [top]="(teamMate$ | async).card" [bottom]="(currentPlayer$ | async).card" [king]="currentGame.king"></app-table>
-      <app-player [player]="rightPlayer$ | async"></app-player>
+      <app-player [player]="leftPlayer"></app-player>
+      <app-table [left]="leftPlayer.card" [right]="rightPlayer.card" [top]="teamMate.card" [bottom]="currentPlayer.card"
+        [king]="currentGame.king"></app-table>
+      <app-player [player]="rightPlayer "></app-player>
     </div>
     <div class="u-flex-center">
-      <app-current-player [player]="currentPlayer$ | async" [default]="currentGame.default" [king]="currentGame.king"
-        [shouldPlay]="currentGame.turn == (currentPlayer$ |async).position"
-        [shouldSetKing]="currentGame.turn == (currentPlayer$ |async).position && !currentGame.king"
+      <app-current-player [player]="currentPlayer" [default]="currentGame.default" [king]="currentGame.king"
+        [shouldPlay]="currentGame.turn == currentPlayer.position"
+        [shouldSetKing]="currentGame.turn == currentPlayer.position && !currentGame.king"
         [canForceClose]="canForceClose" (onPlayCard)="playCard($event)" (onSetKing)="setKing($event)"
         (onForceClose)="forceClose()">
       </app-current-player>
@@ -46,13 +46,12 @@
   </div>
 
   <div *ngIf="gameClosed" style="margin-top: 75px;">
-
     <div *ngIf="!winnerTeam" class="finish u-flex-center">
-      <span class="finish__container u-center-text" *ngIf=" starter.position == (currentPlayer$ |async).position">
+      <span class="finish__container u-center-text" *ngIf=" starter.position == currentPlayer.position">
         <h3>Mano finita - Dai le carte per cominciare una nuova mano</h3>
         <button mat-raised-button color="primary" (click)="startHand()">Dai le carte</button>
       </span>
-      <span class="finish__container" *ngIf=" starter.position != (currentPlayer$ |async).position">
+      <span class="finish__container" *ngIf=" starter.position != currentPlayer.position">
         <h3>Mano finita - Attendi che <strong>{{starter.name}}</strong> dia le carte</h3>
       </span>
     </div>

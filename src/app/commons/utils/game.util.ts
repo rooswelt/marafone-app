@@ -17,7 +17,7 @@ export function getTeamMateName(game: Game, currentPlayer: number): string {
   return game ? game[`player_${getTeamMatePosition(currentPlayer)}_name`] : "";
 }
 
-export function isGameClosed(game: Game): boolean {
+export function isGameClosed(game: Partial<Game>): boolean {
   return game && game.force_closed || (!game.player_1_hand.length && !game.player_2_hand.length && !game.player_3_hand.length && !game.player_4_hand.length);
 }
 
@@ -28,7 +28,7 @@ export function getStarter(hand_1: Card[], hand_2: Card[], hand_3: Card[], hand_
   if (hand_4.find((c => c.type == 'D' && c.value == 4)) != null) return 4
 }
 
-export function getGameWinner(game: Game): TeamNumber {
+export function gameWinner(game: Game): TeamNumber {
   if (game) {
     if (game.force_closed) {
       if (game.force_closed_by == 1) return isTeamWinner(1, game) ? 1 : 2;
@@ -55,6 +55,6 @@ export function hasCard(hand: Card[], sign: Sign, value: number): boolean {
   return (hand || []).some(card => card.type == sign && card.value == value);
 }
 
-export function getTeamNumber(currentPosition: number): number {
+export function getTeamNumber(currentPosition: number): TeamNumber {
   return currentPosition % 2 == 1 ? 1 : 2;
 }

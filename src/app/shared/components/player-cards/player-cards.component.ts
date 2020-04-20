@@ -24,8 +24,7 @@ export class PlayerCardsComponent {
   onPlay: EventEmitter<Card> = new EventEmitter<Card>();
 
   playACard(index: number) {
-    const card = this.cards.splice(index, 1)[0];
-    this.onPlay.emit(card);
+    this.onPlay.emit(this.cards[index]);
   }
 
   canPlayCard(card: Card): boolean {

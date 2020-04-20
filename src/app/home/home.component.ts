@@ -1,20 +1,31 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { select, Store } from '@ngrx/store';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { Card, Game, Sign, TeamNumber } from '../commons/models/game.model';
 import { AlertService } from '../commons/services/alert.service';
-import { DatabaseService } from '../commons/services/database.service';
 import { pointsForTakes } from '../commons/utils/card.util';
-import {
-  getGameWinner,
-  getLeftPosition,
-  getRightPosition,
-  getTeamMatePosition,
-  getTeamNumber,
-  isGameClosed,
-} from '../commons/utils/game.util';
+import * as GameActions from '../store/actions/game.actions';
+import { AppState } from '../store/reducers';
 import { Player } from './../commons/models/game.model';
+import {
+  getCanForceClose,
+  getCurrentPlayer,
+  getCurrentPosition,
+  getCurrentScore,
+  getCurrentTakes,
+  getCurrentTeam,
+  getGame,
+  getGameClosed,
+  getGameStarter,
+  getGameWinner,
+  getLeftPlayer,
+  getOpponentScore,
+  getOpponentTakes,
+  getRightPlayer,
+  getTeamMatePlayer,
+} from './../store/selectors/game.selectors';
 
 @Component({
   selector: 'app-home',
@@ -22,14 +33,14 @@ import { Player } from './../commons/models/game.model';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-
-  currentGame$: Observable<Game>;
+  private unsubscribe$ = new Subject<void>();
+  currentGame: Game;
   gameClosed: boolean = false;
 
-  private currentPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
-  private teamMateSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
-  private leftPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
-  private rightPlayerSubject: BehaviorSubject<Player> = new BehaviorSubject<Player>(null);
+  currentPlayer: Player;
+  teamMate: Player;
+  leftPlayer: Player;
+  rightPlayer: Player;
 
   currentScore: number[];
   opponentsScore: number[];
@@ -44,77 +55,53 @@ export class HomeComponent {
 
   canForceClose: boolean;
 
-  constructor(private db: DatabaseService, private alertService: AlertService) {
-    this.currentGame$ = this.db.currentGame$;
+  private _currentPosition: number;
 
-    this.currentGame$.pipe(filter(game => !!game)).subscribe(game => {
-      this.currentPlayerSubject.next(new Player(game, this.db.currentPosition));
-      this.teamMateSubject.next(new Player(game, getTeamMatePosition(this.db.currentPosition)));
-      this.leftPlayerSubject.next(new Player(game, getLeftPosition(this.db.currentPosition)));
-      this.rightPlayerSubject.next(new Player(game, getRightPosition(this.db.currentPosition)));
-      if (game.starter) {
-        this.starter = new Player(game, game.starter);
-      }
-      if (getTeamNumber(this.db.currentPosition) == 1) {
-        this.currentScore = game.scores_1;
-        this.opponentsScore = game.scores_2;
-        this.currentTakes = game.take_1;
-        this.opponentTakes = game.take_2;
-        this.currentTeam = 1;
-      } else {
-        this.currentScore = game.scores_2;
-        this.opponentsScore = game.scores_1;
-        this.currentTakes = game.take_2;
-        this.opponentTakes = game.take_1;
-        this.currentTeam = 2;
-      }
-      this.canForceClose = this.currentScore[this.currentScore.length - 1] > 30;
-      this.gameClosed = isGameClosed(game);
-      this.winnerTeam = getGameWinner(game);
-    })
+  constructor(private store$: Store<AppState>, private alertService: AlertService) {
+    this.store$.pipe(select(getGame), takeUntil(this.unsubscribe$)).subscribe(game => this.currentGame = game);
+    this.store$.pipe(select(getGameClosed), takeUntil(this.unsubscribe$)).subscribe(gameClosed => this.gameClosed = gameClosed);
+    this.store$.pipe(select(getCurrentPlayer), takeUntil(this.unsubscribe$)).subscribe(currentPlayer => this.currentPlayer = currentPlayer);
+    this.store$.pipe(select(getTeamMatePlayer), takeUntil(this.unsubscribe$)).subscribe(teamMate => this.teamMate = teamMate);
+    this.store$.pipe(select(getLeftPlayer), takeUntil(this.unsubscribe$)).subscribe(leftPlayer => this.leftPlayer = leftPlayer);
+    this.store$.pipe(select(getRightPlayer), takeUntil(this.unsubscribe$)).subscribe(rightPlayer => this.rightPlayer = rightPlayer);
+    this.store$.pipe(select(getCurrentScore), takeUntil(this.unsubscribe$)).subscribe(currentScore => this.currentScore = currentScore);
+    this.store$.pipe(select(getOpponentScore), takeUntil(this.unsubscribe$)).subscribe(opponentsScore => this.opponentsScore = opponentsScore);
+    this.store$.pipe(select(getCurrentTakes), takeUntil(this.unsubscribe$)).subscribe(currentTakes => this.currentTakes = currentTakes);
+    this.store$.pipe(select(getOpponentTakes), takeUntil(this.unsubscribe$)).subscribe(opponentTakes => this.opponentTakes = opponentTakes);
+    this.store$.pipe(select(getGameStarter), takeUntil(this.unsubscribe$)).subscribe(starter => this.starter = starter);
+    this.store$.pipe(select(getCurrentTeam), takeUntil(this.unsubscribe$)).subscribe(currentTeam => this.currentTeam = currentTeam);
+    this.store$.pipe(select(getGameWinner), takeUntil(this.unsubscribe$)).subscribe(winnerTeam => this.winnerTeam = winnerTeam);
+    this.store$.pipe(select(getCanForceClose), takeUntil(this.unsubscribe$)).subscribe(canForceClose => this.canForceClose = canForceClose);
+    this.store$.pipe(select(getCurrentPosition), takeUntil(this.unsubscribe$)).subscribe(currentPosition => this._currentPosition = currentPosition);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   playCard({ card, hint }) {
-    this.db.playCard(this.db.currentPosition, card, hint).subscribe(() => {
-      console.log('Carta giocata', card);
-    });
+    this.store$.dispatch(GameActions.playCard({ playerPosition: this._currentPosition, card, hint }));
   }
 
   startHand() {
-    this.db.giveCards(this.starter.position);
+    this.store$.dispatch(GameActions.giveCards({ oldStarter: this.starter.position }));
   }
 
-  setKing(sign: Sign) {
-    this.db.setKing(sign);
-  }
-
-  setStarter(starter: number) {
-    this.db.setStarter(starter);
+  setKing(king: Sign) {
+    this.store$.dispatch(GameActions.setKing({ king }))
   }
 
   forceClose() {
-    this.db.forceClose(this.currentTeam);
+    this.store$.dispatch(GameActions.forceClose({ closer: this.currentTeam }))
   }
 
   restart() {
     this.alertService.showConfirmDialog('Conferma', 'Sei sicuro di voler ricominciare?').subscribe((confirm) => {
       if (confirm) {
-        this.db.giveCards();
+        this.store$.dispatch(GameActions.startNewGame())
       }
     })
-  }
-
-  get currentPlayer$(): Observable<Player> {
-    return this.currentPlayerSubject.asObservable();
-  }
-  get teamMate$(): Observable<Player> {
-    return this.teamMateSubject.asObservable();
-  }
-  get leftPlayer$(): Observable<Player> {
-    return this.leftPlayerSubject.asObservable();
-  }
-  get rightPlayer$(): Observable<Player> {
-    return this.rightPlayerSubject.asObservable();
   }
 
   pointsForTakes = pointsForTakes

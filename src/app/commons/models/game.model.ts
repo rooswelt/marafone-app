@@ -8,6 +8,7 @@ export interface Card {
 }
 
 export interface Game {
+  id: string,
   player_1_hand: Card[]
   player_1_name: string;
   player_2_hand: Card[]
