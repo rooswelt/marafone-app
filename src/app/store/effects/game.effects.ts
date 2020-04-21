@@ -5,7 +5,6 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Game } from 'src/app/commons/models/game.model';
-import { AlertService } from 'src/app/commons/services/alert.service';
 import { GameService } from 'src/app/commons/services/game.service';
 import { cardEquals, shuffleCards, sortHand } from 'src/app/commons/utils/card.util';
 import { getRightPosition, getStarter, hasCricca } from 'src/app/commons/utils/game.util';
@@ -21,7 +20,6 @@ export class GameEffects {
     private db: AngularFirestore,
     private store$: Store<AppState>,
     private gameService: GameService,
-    private alertService: AlertService,
     private router: Router
   ) { }
 
