@@ -54,9 +54,10 @@ export class GameEffects {
     this.actions$.pipe(
       ofType(GameActions.joinGame),
       map(({ position, name }) => {
-        let newObject = {};
-        newObject[`player_${position}_name`] = name;
-        return GameActions.updateGame({ game: newObject });
+        let newGame: Partial<Game> = {};
+        newGame[`player_${position}_name`] = name;
+        newGame.position_switch = null;
+        return GameActions.updateGame({ game: newGame });
       }),
       tap(() => this.router.navigate(["/home"]))
     )
@@ -67,6 +68,21 @@ export class GameEffects {
       ofType(GameActions.rejoinGame),
       tap(() => this.router.navigate(["/home"]))
     ), { dispatch: false }
+  );
+
+  changeSeat$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.changeSeat),
+      withLatestFrom(
+        this.store$.pipe(select(getGame), filter(game => !!game)),
+        this.store$.pipe(select(getCurrentPosition), filter(position => !!position))
+      ),
+      switchMap(([{ newPosition }, game, currentPosition]) => {
+        // let newGame: Partial<Game> = {};
+        const oldName = game[`player_${currentPosition}_name`];
+        return [GameActions.joinGame({ name: oldName, position: newPosition }), GameActions.changeSeatCompleted({ currentPosition: newPosition })]
+      }),
+    )
   );
 
   startNewGame = createEffect(() =>

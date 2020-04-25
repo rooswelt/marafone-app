@@ -14,6 +14,8 @@ export const joinGame = createAction('[Game] Join game', props<{ position: numbe
 // export const joinGameFailed = createAction('[Game] Join game Failed', props<{ error: any }>());
 
 export const rejoinGame = createAction('[Game] Rejoin game', props<{ position: number }>());
+export const changeSeat = createAction('[Game] Change seat', props<{ newPosition: number }>());
+export const changeSeatCompleted = createAction('[Game] Change seat completed', props<{ currentPosition: number }>());
 // export const rejoinGameCompleted = createAction('[Game] Rejoin game Completed');
 // export const rejoinGameFailed = createAction('[Game] Rejoin game Failed', props<{ error: any }>());
 

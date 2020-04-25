@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { combineLatest, of, Subject } from 'rxjs';
+import { filter, switchMap, takeUntil } from 'rxjs/operators';
 
 import { Card, Game, Sign, TeamNumber } from '../commons/models/game.model';
 import { AlertService } from '../commons/services/alert.service';
@@ -23,6 +23,7 @@ import {
   getLeftPlayer,
   getOpponentScore,
   getOpponentTakes,
+  getPositionSwitch,
   getRightPlayer,
   getTeamMatePlayer,
 } from './../store/selectors/game.selectors';
@@ -73,6 +74,21 @@ export class HomeComponent {
     this.store$.pipe(select(getGameWinner), takeUntil(this.unsubscribe$)).subscribe(winnerTeam => this.winnerTeam = winnerTeam);
     this.store$.pipe(select(getCanForceClose), takeUntil(this.unsubscribe$)).subscribe(canForceClose => this.canForceClose = canForceClose);
     this.store$.pipe(select(getCurrentPosition), takeUntil(this.unsubscribe$)).subscribe(currentPosition => this._currentPosition = currentPosition);
+    this.store$.pipe(
+      select(getPositionSwitch),
+      takeUntil(this.unsubscribe$),
+      filter(positionSwitch => !!positionSwitch),
+      filter((positionSwitch) => (positionSwitch.from == this._currentPosition && positionSwitch.force) || positionSwitch.to == this._currentPosition),
+      switchMap((positionSwitch) => {
+        const other = positionSwitch.from == this._currentPosition ? positionSwitch.to : positionSwitch.from;
+        const otherName = this.currentGame[`player_${other}_name`];
+        return combineLatest(of(other), this.alertService.showConfirmDialog('Conferma cambio posto', `Clicca sul pulsante di conferma per sederti al posto di ${otherName}`, true));
+      }),
+    ).subscribe(([newPosition, confirm]) => {
+      if (confirm) {
+        this.store$.dispatch(GameActions.changeSeat({ newPosition }));
+      }
+    });
   }
 
   ngOnDestroy() {

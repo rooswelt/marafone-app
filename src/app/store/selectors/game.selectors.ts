@@ -101,3 +101,8 @@ export const getCanForceClose = createSelector(
   getCurrentScore,
   (score: number[]) => score && score.length > 0 && score[score.length - 1] > 30
 )
+
+export const getPositionSwitch = createSelector(
+  getGame,
+  (game: Game) => game ? game.position_switch : null
+);

@@ -7,6 +7,7 @@ import { GameService } from 'src/app/commons/services/game.service';
 import * as AdminActions from '../actions/admin.actions';
 import * as GameActions from '../actions/game.actions';
 import { AppState } from '../reducers';
+import { Game } from './../../commons/models/game.model';
 import { getGame } from './../selectors/game.selectors';
 
 @Injectable()
@@ -23,6 +24,23 @@ export class AdminEffects {
       withLatestFrom(this.store$.pipe(select(getGame), filter(game => !!game))),
       map(([_, game]) => {
         this.gameService.check(game);
+        return GameActions.updateGame({ game });
+      }),
+    )
+  );
+
+  proposeChangeSeat = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AdminActions.proposeChangeSeat),
+
+      map(({ firstPosition, secondPosition }) => {
+        const game: Partial<Game> = {
+          position_switch: {
+            force: true,
+            from: firstPosition,
+            to: secondPosition
+          }
+        }
         return GameActions.updateGame({ game });
       }),
     )

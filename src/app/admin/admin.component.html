@@ -1,6 +1,6 @@
 <ng-container *ngIf="currentGame">
 
-  <button (click)="startGame()">Dai carte</button>
+  <button mat-raised-button (click)="startGame()">Dai carte</button>
 
   <button (click)="check()">TEST Raccogli carte</button>
 
@@ -9,10 +9,10 @@
 
   <div *ngIf="!currentGame.king">
     <h3>Scegli briscola</h3>
-    <button (click)="setKing('B')">Bastoni</button>
-    <button (click)="setKing('C')">Coppe</button>
-    <button (click)="setKing('D')">Denari</button>
-    <button (click)="setKing('S')">Spade</button>
+    <button class="button button--green" (click)="setKing('B')">Bastoni</button>
+    <button class="button button--red" (click)="setKing('C')">Coppe</button>
+    <button class="button button--yellow" (click)="setKing('D')">Denari</button>
+    <button class="button button--blue" (click)="setKing('S')">Spade</button>
   </div>
   <div *ngIf="currentGame.king">
     <h3>Briscola di {{currentGame.king | sign}}</h3>
@@ -75,6 +75,25 @@
   <h5>Punti</h5>
   <div>Giocatore 1 e 3: {{currentGame.scores_1 | json}}</div>
   <div>Giocatore 2 e 4: {{currentGame.scores_2 | json}}</div>
+
+  <div class="switch-container">
+    <mat-label>Scambia posizione</mat-label>
+    <mat-select [(ngModel)]="firstPosition" placeholder="Da">
+      <mat-option value=""></mat-option>
+      <mat-option value="1">{{currentGame.player_1_name}}</mat-option>
+      <mat-option value="2">{{currentGame.player_2_name}}</mat-option>
+      <mat-option value="3">{{currentGame.player_3_name}}</mat-option>
+      <mat-option value="4">{{currentGame.player_4_name}}</mat-option>
+    </mat-select>
+    <mat-select [(ngModel)]="secondPosition" placeholder="A">
+      <mat-option value=""></mat-option>
+      <mat-option value="1">{{currentGame.player_1_name}}</mat-option>
+      <mat-option value="2">{{currentGame.player_2_name}}</mat-option>
+      <mat-option value="3">{{currentGame.player_3_name}}</mat-option>
+      <mat-option value="4">{{currentGame.player_4_name}}</mat-option>
+    </mat-select>
+    <button mat-raised-button color="primary" (click)="switchPlayers()">Scambia</button>
+  </div>
 
   <div *ngIf="currentGame.log">
     <h5>Storico mano</h5>

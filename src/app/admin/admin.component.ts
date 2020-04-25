@@ -45,5 +45,12 @@ export class AdminComponent {
     this.store$.dispatch(AdminActions.checkCards());
   }
 
+  firstPosition: number;
+  secondPosition: number;
+
+  switchPlayers() {
+    this.store$.dispatch(AdminActions.proposeChangeSeat({ firstPosition: Number(this.firstPosition), secondPosition: Number(this.secondPosition) }));
+  }
+
   pointsForTakes = pointsForTakes
 }
