@@ -163,7 +163,9 @@ export class GameEffects {
         if (hasCricca(king, game[`player_${currentPosition}_hand`])) {
           if (currentTeam == 1) {
             newGame.scores_1 = [...game.scores_1, game.scores_1[game.scores_1.length - 1] + 3];
+            newGame.scores_2 = [...game.scores_2, game.scores_2[game.scores_2.length - 1]];
           } else {
+            newGame.scores_1 = [...game.scores_1, game.scores_1[game.scores_1.length - 1]];
             newGame.scores_2 = [...game.scores_2, game.scores_2[game.scores_2.length - 1] + 3];
           }
         }
