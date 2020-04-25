@@ -8,6 +8,7 @@ export interface Card {
 }
 
 export interface Game {
+  id: string,
   player_1_hand: Card[]
   player_1_name: string;
   player_2_hand: Card[]
@@ -35,6 +36,7 @@ export interface Game {
   last_take: TeamNumber;
   force_closed: boolean;
   force_closed_by: TeamNumber;
+  position_switch: PositionSwitch,
   log: {
     default: Sign;
     player_1_card: Card;
@@ -42,6 +44,12 @@ export interface Game {
     player_3_card: Card;
     player_4_card: Card;
   }[];
+}
+
+export interface PositionSwitch {
+  force: boolean;
+  from: number;
+  to: number;
 }
 
 export interface Table {

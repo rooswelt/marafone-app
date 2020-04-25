@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AdminGuard } from './shared/guards/admin.guard';
 import { JoinedGuard } from './shared/guards/joined.guard';
 
 const routes: Routes = [
@@ -19,7 +20,7 @@ const routes: Routes = [
       {
         path: "admin",
         loadChildren: () => import('./admin/admin.module').then(mod => mod.AdminModule),
-        canActivate: [JoinedGuard]
+        canActivate: [JoinedGuard, AdminGuard]
       },
       {
         path: "home",
@@ -27,14 +28,13 @@ const routes: Routes = [
         canActivate: [JoinedGuard]
       }
     ]
-  },
-  { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },
+  }
 
 ];
 
 @NgModule({
 
-  providers: [JoinedGuard],
+  providers: [JoinedGuard, AdminGuard],
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })

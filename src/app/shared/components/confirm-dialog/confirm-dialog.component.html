@@ -4,5 +4,5 @@
 </div>
 <div mat-dialog-actions>
   <button mat-raised-button color="primary" (click)="dialogRef.close(true)">Conferma</button>
-  <button mat-raised-button (click)="dialogRef.close(false)">Annulla</button>
+  <button mat-raised-button *ngIf="!force" (click)="dialogRef.close(false)">Annulla</button>
 </div>

@@ -1,6 +1,6 @@
 <div *ngFor="let card of cards; let i = index">
   <span><strong>{{card.value}}</strong> di <strong>{{card.type | sign}}</strong></span>
   <span *ngIf="shouldPlay">
-    <button [disabled]="!canPlayCard(card)" (click)="playACard(i)">GIOCA</button>
+    <button mat-raised-button [disabled]="!canPlayCard(card)" (click)="playACard(i)">GIOCA</button>
   </span>
 </div>

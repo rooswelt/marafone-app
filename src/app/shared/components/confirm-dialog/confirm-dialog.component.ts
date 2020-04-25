@@ -11,4 +11,5 @@ export class ConfirmDialogComponent {
 
   public confirmMessage: string;
   public title: string;
+  public force: boolean = false;
 }

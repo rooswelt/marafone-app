@@ -39,13 +39,15 @@ export class AlertService {
 
   public showConfirmDialog(
     title: string,
-    message: string
-  ): Observable<any> {
+    message: string,
+    force: boolean = false
+  ): Observable<boolean> {
     let dialogRef = this.dialog.open(ConfirmDialogComponent, {
       disableClose: false
     });
     dialogRef.componentInstance.title = title;
     dialogRef.componentInstance.confirmMessage = message;
+    dialogRef.componentInstance.force = force;
 
     return dialogRef.afterClosed();
   }

@@ -13,7 +13,7 @@ import { SignPipe } from './pipes/sign.pipe';
     CardComponent,
     PlayerCardsComponent,
     ConfirmDialogComponent,
-    SignPipe
+    SignPipe,
   ],
   imports: [
     CommonModule,

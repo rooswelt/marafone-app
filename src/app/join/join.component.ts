@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { Game } from './../commons/models/game.model';
-import { DatabaseService } from './../commons/services/database.service';
+import * as GameActions from './../store/actions/game.actions';
+import { AppState } from './../store/reducers';
+import { getGame } from './../store/selectors/game.selectors';
 
 @Component({
   selector: 'app-join',
@@ -14,14 +17,15 @@ import { DatabaseService } from './../commons/services/database.service';
 })
 export class JoinComponent {
 
-  currentGame$: Observable<Game> = this.db.currentGame$;
+  currentGame$: Observable<Game> = this.store$.pipe(select(getGame));
   availableSeats: number[] = [];
 
   idCtrl: FormControl = new FormControl("6X4HHRRqr5P91JD5D9oP", Validators.required);
 
   joinForm: FormGroup;
-  constructor(private fb: FormBuilder, private db: DatabaseService, private router: Router) {
+  constructor(private fb: FormBuilder, private store$: Store<AppState>, private router: Router) {
     this._createForm();
+
     this.currentGame$.pipe(filter(game => !!game)).subscribe(game => {
       if (!game.player_1_name) this.availableSeats.push(1);
       if (!game.player_2_name) this.availableSeats.push(2);
@@ -39,18 +43,18 @@ export class JoinComponent {
   }
 
   selectGame() {
-    this.db.loadGame(this.idCtrl.value);
-
+    this.store$.dispatch(GameActions.loadGame({ id: this.idCtrl.value }));
   }
 
   rejoin(position) {
-    this.db.rejoin(position);
-    this.router.navigate(["/home"]);
+    this.store$.dispatch(GameActions.rejoinGame({ position }));
   }
 
-  join(asAdmin: boolean = false) {
-    this.db.joinGame(this.joinForm.value.position, this.joinForm.value.name).subscribe(() => {
-      this.router.navigate([asAdmin ? "/admin" : "/home"]);
-    })
+  join() {
+    this.store$.dispatch(GameActions.joinGame({ position: this.joinForm.value.position, name: this.joinForm.value.name }));
+  }
+
+  goToAdmin() {
+    this.router.navigate(['/admin'])
   }
 }

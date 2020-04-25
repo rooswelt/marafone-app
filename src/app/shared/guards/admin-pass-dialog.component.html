@@ -1,0 +1,31 @@
+<div class="pin">
+
+    <div class="pin__digits">
+        <div *ngIf="!errorMessageDisplay">
+            <span class="pin__digit" *ngFor="let digit of currentPin">*</span>
+        </div>
+        <div class="pin__error" *ngIf="errorMessageDisplay">Incorrect PIN</div>
+    </div>
+
+    <div class="pin__keypad">
+        <button class="pin__keypad-button" (click)="onDigit('1')">1</button>
+        <button class="pin__keypad-button" (click)="onDigit('2')">2</button>
+        <button class="pin__keypad-button" (click)="onDigit('3')">3</button>
+        <button class="pin__keypad-button" (click)="onDigit('4')">4</button>
+        <button class="pin__keypad-button" (click)="onDigit('5')">5</button>
+        <button class="pin__keypad-button" (click)="onDigit('6')">6</button>
+        <button class="pin__keypad-button" (click)="onDigit('7')">7</button>
+        <button class="pin__keypad-button" (click)="onDigit('8')">8</button>
+        <button class="pin__keypad-button" (click)="onDigit('9')">9</button>
+        <button class="pin__keypad-button pin__keypad-button--cancel" (click)="onReset()" [disabled]="currentPin.length == 0">X</button>
+        <button class="pin__keypad-button" (click)="onDigit('0')">0 </button>
+        <button class="pin__keypad-button" (click)="onDelete()" [disabled]="currentPin.length == 0">&#8656;</button>
+    </div>
+
+    <div class="pin__actions">
+        <ion-button class="pin__action" mode="ios" fill="clear" color="dark" (click)="cancel()">Cancel</ion-button>
+        <ion-button class="pin__action" mode="ios" color="secondary" (click)="check()">Enter</ion-button>
+    </div>
+
+</div>
+

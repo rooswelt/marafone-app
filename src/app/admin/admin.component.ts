@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { select, Store } from '@ngrx/store';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { Card, Game, Hint, Sign } from '../commons/models/game.model';
-import { DatabaseService } from '../commons/services/database.service';
 import { pointsForTakes } from '../commons/utils/card.util';
+import * as AdminActions from '../store/actions/admin.actions';
+import * as GameActions from '../store/actions/game.actions';
+import { AppState } from '../store/reducers';
+import { getGame } from '../store/selectors/game.selectors';
 
 @Component({
   selector: 'app-admin',
@@ -12,38 +16,40 @@ import { pointsForTakes } from '../commons/utils/card.util';
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
-  currentGame$: Observable<Game>;
+  private unsubscribe$ = new Subject<void>();
+  currentGame: Game;
 
-  currentName: string;
-
-  constructor(private db: DatabaseService) {
-    this.currentGame$ = this.db.currentGame$;
-
-    this.currentGame$.pipe(filter(game => !!game)).subscribe(game => {
-      this.currentName = game[`player_${this.db.currentPosition}_name`];
-    })
+  constructor(private store$: Store<AppState>) {
+    this.store$.pipe(select(getGame), takeUntil(this.unsubscribe$)).subscribe(game => this.currentGame = game);
   }
 
-  playCard(position: number, card: Card, hint: Hint = null) {
-    this.db.playCard(position, card, hint).subscribe(() => {
-      console.log('Carta giocata', card);
-    });
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+
+  playCard(playerPosition: number, card: Card, hint: Hint = null) {
+    this.store$.dispatch(GameActions.playCard({ playerPosition, card, hint }));
+  }
+
+  setKing(king: Sign) {
+    this.store$.dispatch(GameActions.setKing({ king }))
   }
 
   startGame() {
-    this.db.giveCards();
-  }
-
-  setKing(sign: Sign) {
-    this.db.setKing(sign);
+    this.store$.dispatch(GameActions.startNewGame())
   }
 
   check() {
-    this.db.check();
+    this.store$.dispatch(AdminActions.checkCards());
   }
 
-  finalCheck() {
-    this.db.checkFinish();
+  firstPosition: number;
+  secondPosition: number;
+
+  switchPlayers() {
+    this.store$.dispatch(AdminActions.proposeChangeSeat({ firstPosition: Number(this.firstPosition), secondPosition: Number(this.secondPosition) }));
   }
 
   pointsForTakes = pointsForTakes
