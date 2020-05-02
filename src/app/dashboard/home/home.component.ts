@@ -3,12 +3,11 @@ import { select, Store } from '@ngrx/store';
 import { combineLatest, of, Subject } from 'rxjs';
 import { filter, switchMap, takeUntil } from 'rxjs/operators';
 
-import { Card, Game, Sign, TeamNumber } from '../commons/models/game.model';
-import { AlertService } from '../commons/services/alert.service';
-import { pointsForTakes } from '../commons/utils/card.util';
-import * as GameActions from '../store/actions/game.actions';
-import { AppState } from '../store/reducers';
-import { Player } from './../commons/models/game.model';
+import { Card, Game, Player, Sign, TeamNumber } from '../../commons/models/game.model';
+import { AlertService } from '../../commons/services/alert.service';
+import { pointsForTakes } from '../../commons/utils/card.util';
+import * as GameActions from '../../store/actions/game.actions';
+import { AppState } from '../../store/reducers';
 import {
   getCanForceClose,
   getCurrentPlayer,
@@ -26,7 +25,7 @@ import {
   getPositionSwitch,
   getRightPlayer,
   getTeamMatePlayer,
-} from './../store/selectors/game.selectors';
+} from '../../store/selectors/game.selectors';
 
 @Component({
   selector: 'app-home',

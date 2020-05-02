@@ -1,6 +1,9 @@
 import { createAction, props } from '@ngrx/store';
 import { Card, Game, Hint, Sign, TeamNumber } from 'src/app/commons/models/game.model';
 
+export const createGame = createAction('[Game] Create game', props<{ name: string }>());
+export const createGameCompleted = createAction('[Game] Create game completed', props<{ game: Game }>());
+
 export const loadGame = createAction('[Game] Load game', props<{ id: string }>());
 export const loadGameCompleted = createAction('[Game] Load game Completed', props<{ game: Game }>());
 export const loadGameFailed = createAction('[Game] Load game Failed', props<{ error: any }>());

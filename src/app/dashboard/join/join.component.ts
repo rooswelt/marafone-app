@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { Game } from 'src/app/commons/models/game.model';
 
-import { Game } from './../commons/models/game.model';
-import * as GameActions from './../store/actions/game.actions';
-import { AppState } from './../store/reducers';
-import { getGame } from './../store/selectors/game.selectors';
+import * as GameActions from '../../store/actions/game.actions';
+import { AppState } from '../../store/reducers';
+import { getGame } from '../../store/selectors/game.selectors';
 
 @Component({
   selector: 'app-join',
@@ -23,6 +23,8 @@ export class JoinComponent {
   idCtrl: FormControl = new FormControl("6X4HHRRqr5P91JD5D9oP", Validators.required);
 
   joinForm: FormGroup;
+
+  createForm: FormGroup;
   constructor(private fb: FormBuilder, private store$: Store<AppState>, private router: Router) {
     this._createForm();
 
@@ -40,6 +42,10 @@ export class JoinComponent {
       name: ["", Validators.required]
     }
     this.joinForm = this.fb.group(group);
+
+    this.createForm = this.fb.group({
+      name: ["", Validators.required]
+    })
   }
 
   selectGame() {
@@ -56,5 +62,9 @@ export class JoinComponent {
 
   goToAdmin() {
     this.router.navigate(['/admin'])
+  }
+
+  createGame() {
+    this.store$.dispatch(GameActions.createGame({ name: 'TEST GAME' }));
   }
 }

@@ -1,0 +1,14 @@
+<mat-toolbar class="mat-elevation-z6 u-flex-between" color="accent">
+  <span>Marafone Online</span>
+
+  <span>{{currentUser.displayName || currentUser.email}}</span>
+  <button mat-icon-button [mat-menu-trigger-for]="menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-menu x-position="before" overlapTrigger="false" #menu="matMenu">
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+    Esci
+  </button>
+</mat-menu>

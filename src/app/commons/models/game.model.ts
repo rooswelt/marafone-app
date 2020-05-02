@@ -7,8 +7,11 @@ export interface Card {
   type: Sign
 }
 
+export type NewGame = Pick<Game, "name">
+
 export interface Game {
   id: string,
+  name: string,
   player_1_hand: Card[]
   player_1_name: string;
   player_2_hand: Card[]

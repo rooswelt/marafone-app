@@ -1,0 +1,36 @@
+<div class="u-flex-center u-full-height">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Marafone Online - Login</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <button mat-raised-button (click)="loginWithGoogle()">Accedi con Google</button>
+      <form [formGroup]="form">
+        <mat-form-field class="u-full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete='off' autocorrect='off'
+            autocapitalize='off'>
+        </mat-form-field>
+        <mat-form-field class="u-full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" autocomplete='off' autocorrect='off'
+            autocapitalize='off'>
+        </mat-form-field>
+      </form>
+      <div class="u-flex u-center-text">
+        <h3 *ngIf="error">
+          {{error}}
+        </h3>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="u-flex-between">
+      <button mat-raised-button (click)="register()">Nuova registrazione</button>
+
+      <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="login()">Accedi</button>
+    </mat-card-actions>
+    <mat-card-footer class="u-flex-center">
+
+      <button mat-flat-button (click)="resetPassword()">Password dimenticata?</button>
+    </mat-card-footer>
+  </mat-card>
+</div>

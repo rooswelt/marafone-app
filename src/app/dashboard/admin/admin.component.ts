@@ -3,12 +3,12 @@ import { select, Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { Card, Game, Hint, Sign } from '../commons/models/game.model';
-import { pointsForTakes } from '../commons/utils/card.util';
-import * as AdminActions from '../store/actions/admin.actions';
-import * as GameActions from '../store/actions/game.actions';
-import { AppState } from '../store/reducers';
-import { getGame } from '../store/selectors/game.selectors';
+import { Card, Game, Hint, Sign } from '../../commons/models/game.model';
+import { pointsForTakes } from '../../commons/utils/card.util';
+import * as AdminActions from '../../store/actions/admin.actions';
+import * as GameActions from '../../store/actions/game.actions';
+import { AppState } from '../../store/reducers';
+import { getGame } from '../../store/selectors/game.selectors';
 
 @Component({
   selector: 'app-admin',

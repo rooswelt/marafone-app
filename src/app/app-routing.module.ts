@@ -1,40 +1,33 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AdminGuard } from './shared/guards/admin.guard';
-import { JoinedGuard } from './shared/guards/joined.guard';
+import { AuthGuard } from './shared/guards/auth.guard';
 
 const routes: Routes = [
+
   {
     path: "",
-    children: [
-      {
-        path: "",
-        redirectTo: "join",
-        pathMatch: "full"
-      },
-      {
-        path: "join",
-        loadChildren: () => import('./join/join.module').then(mod => mod.JoinModule),
-      },
-      {
-        path: "admin",
-        loadChildren: () => import('./admin/admin.module').then(mod => mod.AdminModule),
-        canActivate: [JoinedGuard, AdminGuard]
-      },
-      {
-        path: "home",
-        loadChildren: () => import('./home/home.module').then(mod => mod.HomeModule),
-        canActivate: [JoinedGuard]
-      }
-    ]
+    redirectTo: "dashboard",
+    pathMatch: "full"
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./login/login.module').then(m => m.LoginModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./register/register.module').then(m => m.RegisterModule)
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+    canActivate: [AuthGuard]
   }
-
 ];
 
 @NgModule({
 
-  providers: [JoinedGuard, AdminGuard],
+  providers: [AuthGuard],
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })

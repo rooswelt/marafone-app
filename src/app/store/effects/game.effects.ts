@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { Game } from 'src/app/commons/models/game.model';
+import { Game, NewGame } from 'src/app/commons/models/game.model';
 import { GameService } from 'src/app/commons/services/game.service';
 import { cardEquals, shuffleCards, sortHand } from 'src/app/commons/utils/card.util';
 import { getRightPosition, getStarter, hasCricca } from 'src/app/commons/utils/game.util';
@@ -38,6 +38,23 @@ export class GameEffects {
       map((game) => GameActions.loadGameCompleted({ game }))
     )
   );
+
+  createGame$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.createGame),
+
+      tap(({ name }) =>
+        this.db.collection<NewGame>("partite").add({ name }).then((result) => {
+          console.log('Add result', result);
+        }).catch(error => {
+          console.log('Error in adding', error)
+        })
+
+      ),
+      // map(() => GameActions.updateGameCompleted())
+    ), { dispatch: false }
+  );
+
 
   updateGame$ = createEffect(() =>
     this.actions$.pipe(

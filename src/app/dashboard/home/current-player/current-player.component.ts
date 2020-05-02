@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Card, Player, Sign } from 'src/app/commons/models/game.model';
 
-import { Hint } from './../../commons/models/game.model';
-import { AlertService } from './../../commons/services/alert.service';
+import { Hint } from '../../../commons/models/game.model';
+import { AlertService } from '../../../commons/services/alert.service';
 
 @Component({
   selector: 'app-current-player',
