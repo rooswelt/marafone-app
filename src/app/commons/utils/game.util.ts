@@ -1,3 +1,5 @@
+import { Md5 } from 'ts-md5/dist/md5';
+
 import { Card, Game, Sign } from '../models/game.model';
 import { TeamNumber } from './../models/game.model';
 
@@ -17,8 +19,16 @@ export function getTeamMateName(game: Game, currentPlayer: number): string {
   return game ? game[`player_${getTeamMatePosition(currentPlayer)}_name`] : "";
 }
 
+export function isGameReady(game: Partial<Game>): boolean {
+  return game && game.player_1_name != null && game.player_2_name != null && game.player_3_name != null && game.player_4_name != null;
+}
+
+export function isGameStarted(game: Partial<Game>): boolean {
+  return game && isGameReady(game) && (!!game.player_1_hand?.length || !!game.player_2_hand?.length || !!game.player_3_hand?.length || !!game.player_4_hand?.length);
+}
+
 export function isGameClosed(game: Partial<Game>): boolean {
-  return game && game.force_closed || (!game.player_1_hand.length && !game.player_2_hand.length && !game.player_3_hand.length && !game.player_4_hand.length);
+  return game && isGameReady(game) && (game.force_closed || (!game.player_1_hand?.length && !game.player_2_hand?.length && !game.player_3_hand?.length && !game.player_4_hand?.length));
 }
 
 export function getStarter(hand_1: Card[], hand_2: Card[], hand_3: Card[], hand_4: Card[]): number {
@@ -41,8 +51,8 @@ export function gameWinner(game: Game): TeamNumber {
 }
 
 function isTeamWinner(teamNumber: TeamNumber, game: Game): boolean {
-  if (game) {
-    return (game[`scores_${teamNumber}`].length && game[`scores_${teamNumber}`][game[`scores_${teamNumber}`].length - 1] > 40);
+  if (isGameStarted(game)) {
+    return (game[`scores_${teamNumber}`]?.length && game[`scores_${teamNumber}`][game[`scores_${teamNumber}`]?.length - 1] > 40);
   }
   return false;
 }
@@ -57,4 +67,9 @@ export function hasCard(hand: Card[], sign: Sign, value: number): boolean {
 
 export function getTeamNumber(currentPosition: number): TeamNumber {
   return currentPosition % 2 == 1 ? 1 : 2;
+}
+
+export function hashString(value: string): string {
+  const md5 = new Md5();
+  return md5.appendStr(value).end() as string;
 }

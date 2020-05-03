@@ -1,0 +1,6 @@
+<div class="u-flex-center u-full-height">
+  <app-game-list *ngIf="!currentGame" [games]="games" (onGameSelected)="selectGame($event)"
+    (onGameCreate)="createGame()"></app-game-list>
+  <app-seats *ngIf="currentGame" [currentGame]="currentGame" (onCancel)="clearSelectedGame()" (onAsAdmin)="goToAdmin()"
+    (onJoin)="join($event)" (onRejoin)="rejoin($event)"></app-seats>
+</div>

@@ -1,0 +1,47 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Scegli la sedia</mat-card-title>
+  </mat-card-header>
+  <mat-card-content *ngIf="currentGame">
+    <div *ngIf="currentGame.player_1_name" class="seat">
+      Sedia 1 - {{currentGame.player_1_name}} <button mat-raised-button color="primary"
+        (click)="rejoin(1)">Recupera</button>
+    </div>
+    <div *ngIf="currentGame.player_2_name" class="seat">
+      Sedia 2 - {{currentGame.player_2_name}} <button mat-raised-button color="primary"
+        (click)="rejoin(2)">Recupera</button>
+    </div>
+    <div *ngIf="currentGame.player_3_name" class="seat">
+      Sedia 3 - {{currentGame.player_3_name}} <button mat-raised-button color="primary"
+        (click)="rejoin(3)">Recupera</button>
+    </div>
+    <div *ngIf="currentGame.player_4_name" class="seat">
+      Sedia 4 - {{currentGame.player_4_name}} <button mat-raised-button color="primary"
+        (click)="rejoin(4)">Recupera</button>
+    </div>
+    <form [formGroup]="joinForm" novalidate *ngIf="availableSeats?.length">
+      <mat-form-field class="u-full-width">
+        <mat-select formControlName="position" placeholder="Sedia" class="u-full-width" required>
+          <mat-option *ngFor="let seatNumber of availableSeats" [value]="seatNumber">Sedia {{seatNumber}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="u-full-width">
+        <mat-label>Nome</mat-label>
+        <input matInput type="text" formControlName="name" required>
+      </mat-form-field>
+      <mat-form-field class="u-full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="text" formControlName="password" required>
+        <mat-hint>Per evitare che un altro si sieda al tuo posto</mat-hint>
+      </mat-form-field>
+      <div class="u-flex-center">
+        <button mat-raised-button color="primary" [disabled]="joinForm.invalid" (click)="join()">Siediti</button>
+      </div>
+    </form>
+
+  </mat-card-content>
+  <mat-card-actions class="u-flex-between">
+    <button mat-button (click)="cancel()">Annulla</button>
+    <button mat-button color="secondary" (click)="asAdmin()">Admin</button>
+  </mat-card-actions>
+</mat-card>

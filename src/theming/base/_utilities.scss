@@ -44,6 +44,10 @@
   display: flex !important;
 }
 
+.u-flex-column {
+  flex-direction: column;
+}
+
 .u-flex-center {
   display: flex !important;
   justify-content: center;

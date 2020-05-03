@@ -1,0 +1,19 @@
+<div class="u-flex-center u-full-height">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Crea un nuovo tavolo</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="u-flex-around">
+      <form [formGroup]="gameForm">
+        <mat-form-field class="u-full-width">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="name" type="text" required>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+    <mat-card-actions class="u-flex-between">
+      <button mat-button (click)="cancel()">Annulla</button>
+      <button mat-raised-button [disabled]="gameForm.invalid" color="primary" (click)="create()">Crea</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

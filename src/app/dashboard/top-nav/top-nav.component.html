@@ -1,0 +1,53 @@
+<mat-toolbar class="mat-elevation-z6 u-flex-between" color="accent">
+  <span>Marafone - Beccaccino</span>
+
+  <span *ngIf="currentGame" class="u-center-text">
+    <div *ngIf="currentGame.king" style="font-weight: 100;">
+      Briscola <strong>{{currentGame.king | sign}}</strong> messa da <strong>{{starter?.name}}</strong>
+    </div>
+    <div *ngIf="currentGame.default" style="font-weight: 100;">
+      Gioco di <strong>{{currentGame.default | sign}}</strong>
+    </div>
+  </span>
+
+  <span class="score u-flex-center" style="cursor: pointer;" *ngIf="currentGame" [mdePopoverTriggerFor]="scorePopover"
+    mdePopoverTriggerOn="click" #popoverTrigger="mdePopoverTrigger">
+    {{currentGame?.name}}&nbsp;
+    <span *ngIf="currentPosition">
+      <span><strong>{{currentScore[currentScore.length-1]}}</strong></span>
+      &nbsp;-&nbsp;
+      <span><strong>{{opponentsScore[opponentsScore.length-1]}}</strong></span>
+    </span>
+  </span>
+
+  <button *ngIf="currentUser" mat-icon-button [mat-menu-trigger-for]="menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-menu x-position="before" overlapTrigger="false" #menu="matMenu">
+  <button mat-menu-item (click)="about()">
+    <mat-icon>exit_to_app</mat-icon>
+    About
+  </button>
+  <button *ngIf="currentUser" mat-menu-item (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+    Esci
+  </button>
+</mat-menu>
+
+<mde-popover #scorePopover="mdePopover" [mdePopoverOverlapTrigger]="true">
+  <mat-card>
+    <table>
+      <tr>
+        <th style="text-align: center;">Noi</th>
+        <th style="text-align: center;">Loro</th>
+      </tr>
+      <tbody>
+        <tr *ngFor="let score of currentScore; let i = index">
+          <td style="text-align: center;">{{currentScore[i]}}</td>
+          <td style="text-align: center;">{{opponentsScore[i]}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </mat-card>
+</mde-popover>

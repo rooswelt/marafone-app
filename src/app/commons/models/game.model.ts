@@ -7,8 +7,13 @@ export interface Card {
   type: Sign
 }
 
+export type NewGame = Pick<Game, "name" | "password" | "public" | "empty_seats">
+
 export interface Game {
   id: string,
+  name: string,
+  password?: string,
+  public?: boolean,
   player_1_hand: Card[]
   player_1_name: string;
   player_2_hand: Card[]
@@ -44,6 +49,7 @@ export interface Game {
     player_3_card: Card;
     player_4_card: Card;
   }[];
+  empty_seats: number
 }
 
 export interface PositionSwitch {

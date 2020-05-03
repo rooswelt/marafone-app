@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
-import { filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { Game } from 'src/app/commons/models/game.model';
+import { from, of } from 'firebase-ngrx-user-management/node_modules/rxjs';
+import { filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { Game, NewGame } from 'src/app/commons/models/game.model';
 import { GameService } from 'src/app/commons/services/game.service';
 import { cardEquals, shuffleCards, sortHand } from 'src/app/commons/utils/card.util';
-import { getRightPosition, getStarter, hasCricca } from 'src/app/commons/utils/game.util';
+import { getRightPosition, getStarter, hasCricca, hashString } from 'src/app/commons/utils/game.util';
 
 import * as GameActions from '../actions/game.actions';
 import { AppState } from '../reducers';
+import { AlertService } from './../../commons/services/alert.service';
+import { PasswordDialogComponent } from './../../shared/components/password-dialog/password-dialog.component';
 import { getCurrentPosition, getCurrentTeam, getGame } from './../selectors/game.selectors';
+
 
 @Injectable()
 export class GameEffects {
@@ -20,8 +25,31 @@ export class GameEffects {
     private db: AngularFirestore,
     private store$: Store<AppState>,
     private gameService: GameService,
-    private router: Router
+    private alertService: AlertService,
+    private router: Router,
+    private dialog: MatDialog
   ) { }
+
+  loadGames$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.loadGames),
+      switchMap(() =>
+        this.db.collection<Game>("partite").get().pipe(
+          take(1),
+          map(docs => {
+            const games: Game[] = [];
+            docs.forEach(doc => {
+              const game = doc.data() as Game;
+              const id = doc.id;
+              games.push({ id, ...game })
+            })
+            return games;
+          })
+        )
+      ),
+      map((games) => GameActions.loadGamesCompleted({ games }))
+    )
+  );
 
   loadGame$ = createEffect(() =>
     this.actions$.pipe(
@@ -39,6 +67,32 @@ export class GameEffects {
     )
   );
 
+  createGame$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.createGame),
+      map(({ newGame }) => {
+        return { ...newGame, password: hashString(newGame.password) }
+      }),
+      switchMap((newGame) => from(this.db.collection<NewGame>("partite").add(newGame))),
+      switchMap(ref => from(ref.get())),
+      map(doc => {
+        const game = doc.data() as Game;
+        const id = doc.id;
+        return { id, ...game };
+      }),
+      map((game) => GameActions.createGameCompleted({ game }))
+    )
+  );
+
+  createGameCompleted$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.createGameCompleted),
+      tap(({ game }) => this.alertService.showConfirmMessage(`Tavolo ${game.name} creato`)),
+      tap(() => this.router.navigate(['/join'])),
+      map(({ game }) => GameActions.loadGameCompleted({ game }))
+    )
+  )
+
   updateGame$ = createEffect(() =>
     this.actions$.pipe(
       ofType(GameActions.updateGame),
@@ -53,14 +107,47 @@ export class GameEffects {
   joinGame$ = createEffect(() =>
     this.actions$.pipe(
       ofType(GameActions.joinGame),
-      map(({ position, name }) => {
+      withLatestFrom(this.store$.pipe(select(getGame), filter(game => !!game), map(game => game.empty_seats))),
+      map(([{ position, name, password }, empty_seats]) => {
         let newGame: Partial<Game> = {};
         newGame[`player_${position}_name`] = name;
+        newGame[`player_${position}_password`] = hashString(password);
         newGame.position_switch = null;
+        newGame.empty_seats = empty_seats - 1 | 0;
         return GameActions.updateGame({ game: newGame });
       }),
       tap(() => this.router.navigate(["/home"]))
     )
+  );
+
+  tryRejoin$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.tryRejoinGame),
+      withLatestFrom(this.store$.pipe(select(getGame), filter(game => !!game))),
+      switchMap(([{ position }, game]) => {
+        const password = game[`player_${position}_password`];
+        if (!password) return of(GameActions.rejoinGame({ position }));
+        return this.dialog.open(PasswordDialogComponent).afterClosed().pipe(
+          map(guess => {
+            if (guess) {
+              if (hashString(guess) == password) {
+                return GameActions.rejoinGame({ position });
+              } else {
+                return GameActions.rejoinGameFailed();
+              }
+            } else {
+              return GameActions.rejoinGameCancelled();
+            }
+          })
+        )
+      }))
+  );
+
+  rejoinGameFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.rejoinGameFailed),
+      tap(() => this.alertService.showErrorMessage('Impossibile proseguire', 'Password non valida'))
+    ), { dispatch: false }
   );
 
   rejoinGame$ = createEffect(() =>
@@ -78,9 +165,9 @@ export class GameEffects {
         this.store$.pipe(select(getCurrentPosition), filter(position => !!position))
       ),
       switchMap(([{ newPosition }, game, currentPosition]) => {
-        // let newGame: Partial<Game> = {};
         const oldName = game[`player_${currentPosition}_name`];
-        return [GameActions.joinGame({ name: oldName, position: newPosition }), GameActions.changeSeatCompleted({ currentPosition: newPosition })]
+        const oldPassword = game[`player_${currentPosition}_password`];
+        return [GameActions.joinGame({ name: oldName, position: newPosition, password: oldPassword }), GameActions.changeSeatCompleted({ currentPosition: newPosition })]
       }),
     )
   );
@@ -95,12 +182,12 @@ export class GameEffects {
   forceClose$ = createEffect(() =>
     this.actions$.pipe(
       ofType(GameActions.forceClose),
-      map(({ closer }) => {
-        let newGame: Partial<Game> = {
-          force_closed: true,
-          force_closed_by: closer,
-          last_take: null
-        }
+      withLatestFrom(this.store$.pipe(select(getGame), filter(game => !!game))),
+      map(([{ closer }, game]) => {
+        let newGame: Partial<Game> = JSON.parse(JSON.stringify(game));
+        newGame.force_closed = true;
+        newGame.force_closed_by = closer;
+        newGame.last_take = null;
         this.gameService.checkFinish(newGame);
         return GameActions.updateGame({ game: newGame });
       })

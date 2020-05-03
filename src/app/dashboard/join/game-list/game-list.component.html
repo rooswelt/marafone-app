@@ -1,0 +1,16 @@
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Tavoli</mat-card-title>
+    </mat-card-header>
+    <mat-card-content *ngIf="games?.length">
+      <div *ngFor="let game of games" class="u-flex-between">
+        <span class="game">
+          {{game.name}}<span *ngIf="game.empty_seats">, {{game.empty_seats}} sedie libere</span>
+        </span>
+        <button mat-raised-button color="primary" (click)="selectGame(game)">Entra</button>
+      </div>
+    </mat-card-content>
+    <mat-card-actions class="u-flex-center">
+      <button mat-raised-button (click)="createGame()">Crea tavolo</button>
+    </mat-card-actions>
+  </mat-card>
