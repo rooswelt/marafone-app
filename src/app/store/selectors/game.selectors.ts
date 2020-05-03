@@ -7,11 +7,17 @@ import {
   getTeamMatePosition,
   getTeamNumber,
   isGameClosed,
+  isGameReady,
+  isGameStarted,
 } from 'src/app/commons/utils/game.util';
 
 import { selectGameState } from '../reducers';
 import { GameState } from '../reducers/game.reducer';
 
+export const getGames = createSelector(
+  selectGameState,
+  (state: GameState) => state.games
+);
 
 export const getGame = createSelector(
   selectGameState,
@@ -49,7 +55,7 @@ export const getRightPlayer = createSelector(
 
 export const getGameStarterPosition = createSelector(
   getGame,
-  (game: Game) => game ? game.starter : null
+  (game: Game) => game ? game.starter || 1 : null
 )
 
 export const getGameStarter = createSelector(
@@ -57,6 +63,16 @@ export const getGameStarter = createSelector(
   getGameStarterPosition,
   (game: Game, position: number) => new Player(game, position)
 )
+
+export const getGameReady = createSelector(
+  getGame,
+  (game: Game) => game && isGameReady(game)
+);
+
+export const getGameStarted = createSelector(
+  getGame,
+  (game: Game) => game && isGameStarted(game)
+);
 
 export const getGameClosed = createSelector(
   getGame,

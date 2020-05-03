@@ -10,13 +10,12 @@ const routes: Routes = [{
   component: DashboardComponent,
   children: [
     {
-      path: '',
-      redirectTo: 'join',
-      pathMatch: 'full'
-    },
-    {
       path: "join",
       loadChildren: () => import('./join/join.module').then(mod => mod.JoinModule),
+    },
+    {
+      path: "create",
+      loadChildren: () => import('./create-game/create-game.module').then(mod => mod.CreateGameModule),
     },
     {
       path: "admin",
@@ -27,7 +26,12 @@ const routes: Routes = [{
       path: "home",
       loadChildren: () => import('./home/home.module').then(mod => mod.HomeModule),
       canActivate: [JoinedGuard]
-    }
+    },
+    {
+      path: '',
+      redirectTo: 'join',
+      pathMatch: 'full'
+    },
   ]
 }];
 

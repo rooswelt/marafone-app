@@ -20,7 +20,7 @@ import { TableComponent } from './table/table.component';
     HomeRoutingModule,
     SharedModule,
     MatCardModule,
-    MatButtonModule
+    MatButtonModule,
   ]
 })
 export class HomeModule { }

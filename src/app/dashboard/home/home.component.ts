@@ -12,15 +12,15 @@ import {
   getCanForceClose,
   getCurrentPlayer,
   getCurrentPosition,
-  getCurrentScore,
   getCurrentTakes,
   getCurrentTeam,
   getGame,
   getGameClosed,
+  getGameReady,
+  getGameStarted,
   getGameStarter,
   getGameWinner,
   getLeftPlayer,
-  getOpponentScore,
   getOpponentTakes,
   getPositionSwitch,
   getRightPlayer,
@@ -36,14 +36,13 @@ export class HomeComponent {
   private unsubscribe$ = new Subject<void>();
   currentGame: Game;
   gameClosed: boolean = false;
+  gameReady: boolean = false;
+  gameStarted: boolean = false;
 
   currentPlayer: Player;
   teamMate: Player;
   leftPlayer: Player;
   rightPlayer: Player;
-
-  currentScore: number[];
-  opponentsScore: number[];
 
   currentTakes: Card[];
   opponentTakes: Card[];
@@ -59,13 +58,13 @@ export class HomeComponent {
 
   constructor(private store$: Store<AppState>, private alertService: AlertService) {
     this.store$.pipe(select(getGame), takeUntil(this.unsubscribe$)).subscribe(game => this.currentGame = game);
+    this.store$.pipe(select(getGameReady), takeUntil(this.unsubscribe$)).subscribe(gameReady => this.gameReady = gameReady);
+    this.store$.pipe(select(getGameStarted), takeUntil(this.unsubscribe$)).subscribe(gameStarted => this.gameStarted = gameStarted);
     this.store$.pipe(select(getGameClosed), takeUntil(this.unsubscribe$)).subscribe(gameClosed => this.gameClosed = gameClosed);
     this.store$.pipe(select(getCurrentPlayer), takeUntil(this.unsubscribe$)).subscribe(currentPlayer => this.currentPlayer = currentPlayer);
     this.store$.pipe(select(getTeamMatePlayer), takeUntil(this.unsubscribe$)).subscribe(teamMate => this.teamMate = teamMate);
     this.store$.pipe(select(getLeftPlayer), takeUntil(this.unsubscribe$)).subscribe(leftPlayer => this.leftPlayer = leftPlayer);
     this.store$.pipe(select(getRightPlayer), takeUntil(this.unsubscribe$)).subscribe(rightPlayer => this.rightPlayer = rightPlayer);
-    this.store$.pipe(select(getCurrentScore), takeUntil(this.unsubscribe$)).subscribe(currentScore => this.currentScore = currentScore);
-    this.store$.pipe(select(getOpponentScore), takeUntil(this.unsubscribe$)).subscribe(opponentsScore => this.opponentsScore = opponentsScore);
     this.store$.pipe(select(getCurrentTakes), takeUntil(this.unsubscribe$)).subscribe(currentTakes => this.currentTakes = currentTakes);
     this.store$.pipe(select(getOpponentTakes), takeUntil(this.unsubscribe$)).subscribe(opponentTakes => this.opponentTakes = opponentTakes);
     this.store$.pipe(select(getGameStarter), takeUntil(this.unsubscribe$)).subscribe(starter => this.starter = starter);
@@ -99,8 +98,8 @@ export class HomeComponent {
     this.store$.dispatch(GameActions.playCard({ playerPosition: this._currentPosition, card, hint }));
   }
 
-  startHand() {
-    this.store$.dispatch(GameActions.giveCards({ oldStarter: this.starter.position }));
+  startHand(newGame: boolean = false) {
+    this.store$.dispatch(GameActions.giveCards({ oldStarter: newGame ? null : this.starter.position }));
   }
 
   setKing(king: Sign) {

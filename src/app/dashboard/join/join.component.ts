@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Game } from 'src/app/commons/models/game.model';
 
 import * as GameActions from '../../store/actions/game.actions';
 import { AppState } from '../../store/reducers';
-import { getGame } from '../../store/selectors/game.selectors';
+import { getGame, getGames } from '../../store/selectors/game.selectors';
 
 @Component({
   selector: 'app-join',
@@ -16,55 +15,49 @@ import { getGame } from '../../store/selectors/game.selectors';
   styleUrls: ['./join.component.scss']
 })
 export class JoinComponent {
+  private unsubscribe$ = new Subject<void>();
+  games: Game[];
 
-  currentGame$: Observable<Game> = this.store$.pipe(select(getGame));
-  availableSeats: number[] = [];
+  currentGame: Game; //$: Observable<Game> = this.store$.pipe(select(getGame));
 
-  idCtrl: FormControl = new FormControl("6X4HHRRqr5P91JD5D9oP", Validators.required);
+  // idCtrl: FormControl = new FormControl("6X4HHRRqr5P91JD5D9oP", Validators.required);
 
-  joinForm: FormGroup;
-
-  createForm: FormGroup;
-  constructor(private fb: FormBuilder, private store$: Store<AppState>, private router: Router) {
-    this._createForm();
-
-    this.currentGame$.pipe(filter(game => !!game)).subscribe(game => {
-      if (!game.player_1_name) this.availableSeats.push(1);
-      if (!game.player_2_name) this.availableSeats.push(2);
-      if (!game.player_3_name) this.availableSeats.push(3);
-      if (!game.player_4_name) this.availableSeats.push(4);
-    })
+  constructor(private store$: Store<AppState>, private route: ActivatedRoute, private router: Router) {
+    this.store$.pipe(select(getGames), takeUntil(this.unsubscribe$)).subscribe(games => this.games = games);
+    this.store$.pipe(select(getGame), takeUntil(this.unsubscribe$)).subscribe(currentGame => this.currentGame = currentGame);
+    this.store$.dispatch(GameActions.loadGames());
   }
 
-  private _createForm() {
-    let group = {
-      position: ["", Validators.required],
-      name: ["", Validators.required]
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  selectGame(game: Game) {
+    if (game) {
+      this.store$.dispatch(GameActions.loadGame({ id: game.id }));
     }
-    this.joinForm = this.fb.group(group);
-
-    this.createForm = this.fb.group({
-      name: ["", Validators.required]
-    })
   }
 
-  selectGame() {
-    this.store$.dispatch(GameActions.loadGame({ id: this.idCtrl.value }));
+  clearSelectedGame() {
+    this.store$.dispatch(GameActions.unselectGame());
   }
 
   rejoin(position) {
-    this.store$.dispatch(GameActions.rejoinGame({ position }));
+    this.store$.dispatch(GameActions.tryRejoinGame({ position }));
   }
 
-  join() {
-    this.store$.dispatch(GameActions.joinGame({ position: this.joinForm.value.position, name: this.joinForm.value.name }));
+  join(event: { name: string, position: number, password: string }) {
+    this.store$.dispatch(GameActions.joinGame({ position: event.position, name: event.name, password: event.password }));
   }
 
   goToAdmin() {
-    this.router.navigate(['/admin'])
+    this.router.navigate(['../admin'], { relativeTo: this.route.parent });
+    // this.store$.dispatch(RouterActions.routerGo({ path: ['admin'], extras: { relativeTo: this.route } }))
   }
 
   createGame() {
-    this.store$.dispatch(GameActions.createGame({ name: 'TEST GAME' }));
+    this.router.navigate(['../create'], { relativeTo: this.route.parent });
+    // this.store$.dispatch(RouterActions.routerGo({ path: ['../create'], extras: { relativeTo: this.route.parent } })) //TODO - mrosetti - questa va in errore
   }
 }

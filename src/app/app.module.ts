@@ -17,7 +17,6 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
-import { AuthEffects } from './store/effects/auth.effects';
 import { RouterEffects } from './store/effects/router.effects';
 import { AppState, metaReducers, reducers } from './store/reducers';
 
@@ -62,7 +61,7 @@ export function initApplication(store: Store<AppState>, actions$: Actions): Func
       }
     }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    EffectsModule.forRoot([AuthEffects, RouterEffects])
+    EffectsModule.forRoot([RouterEffects])
   ],
   providers: [
     {

@@ -1,30 +1,4 @@
 <ng-container *ngIf="currentGame">
-  <mat-card class="game__details">
-    <mat-card-content>
-      <div *ngIf="currentGame.king">
-        Briscola <strong>{{currentGame.king | sign}}</strong> messa da <strong>{{starter?.name}}</strong>
-      </div>
-      <div *ngIf="currentGame.default">
-        Gioco di <strong>{{currentGame.default | sign}}</strong>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  <mat-card class="scores__details">
-    <mat-card-content>
-      <table>
-        <tr>
-          <th>Noi</th>
-          <th>Loro</th>
-        </tr>
-        <tbody>
-          <tr *ngFor="let score of currentScore; let i = index">
-            <td>{{currentScore[i]}}</td>
-            <td>{{opponentsScore[i]}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </mat-card-content>
-  </mat-card>
   <div *ngIf="!winnerTeam">
     <div class="u-flex-center mb-20 mt-20">
       <app-player [player]="teamMate"></app-player>
@@ -45,13 +19,32 @@
     </div>
   </div>
 
+  <div *ngIf="!gameReady">
+    <div class="finish u-flex-center">
+      <span class="finish__container u-flex-center">
+        <h3>Mancano ancora alcuni giocatori</h3>
+      </span>
+    </div>
+  </div>
+  <div *ngIf="!gameStarted && gameReady && !gameClosed">
+    <div class="finish u-flex-center">
+      <span class="finish__container u-center-text" *ngIf="starter.position == currentPlayer.position">
+        <h3>Il tavolo è pronto a cominciare, dai le carte</h3>
+        <button mat-raised-button color="primary" (click)="startHand(true)">Dai le carte</button>
+      </span>
+      <span class="finish__container" *ngIf="starter.position != currentPlayer.position">
+        <h3>Il tavolo è pronto a cominciare - Attendi che <strong>{{starter.name}}</strong> dia le carte</h3>
+      </span>
+    </div>
+  </div>
+
   <div *ngIf="gameClosed" style="margin-top: 75px;">
     <div *ngIf="!winnerTeam" class="finish u-flex-center">
-      <span class="finish__container u-center-text" *ngIf=" starter.position == currentPlayer.position">
+      <span class="finish__container u-center-text" *ngIf="starter.position == currentPlayer.position">
         <h3>Mano finita - Dai le carte per cominciare una nuova mano</h3>
         <button mat-raised-button color="primary" (click)="startHand()">Dai le carte</button>
       </span>
-      <span class="finish__container" *ngIf=" starter.position != currentPlayer.position">
+      <span class="finish__container" *ngIf="starter.position != currentPlayer.position">
         <h3>Mano finita - Attendi che <strong>{{starter.name}}</strong> dia le carte</h3>
       </span>
     </div>

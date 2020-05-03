@@ -1,5 +1,5 @@
 <div class="king-selection" *ngIf="shouldSetKing">
-  <h5>Scegli la briscola</h5>
+  <h3 class="u-center-text">Scegli la briscola</h3>
   <button class="button button--green" (click)="setKing('B')">Bastoni</button>
   <button class="button button--red" (click)="setKing('C')">Coppe</button>
   <button class="button button--yellow" (click)="setKing('D')">Denari</button>
@@ -17,16 +17,17 @@
     </label>
   </div>
 </div>
-
-<div class="actions u-flex-center" *ngIf="!shouldSetKing && shouldPlay">
-  <button mat-raised-button color="primary" [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
-  <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
-    (click)="playCard('Striscio')">Striscio</button>
-  <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
-    (click)="playCard('Busso')">Busso</button>
-  <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
-    (click)="playCard('Volo')">Volo</button>
-</div>
+<span *ngIf="!shouldSetKing">
+  <div class="actions u-flex-center" *ngIf="shouldPlay">
+    <button mat-raised-button color="primary" [disabled]="!selectedCard" (click)="playCard()">Gioca</button>
+    <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
+      (click)="playCard('Striscio')">Striscio</button>
+    <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
+      (click)="playCard('Busso')">Busso</button>
+    <button mat-raised-button color="primary" *ngIf="!default" [disabled]="!selectedCard"
+      (click)="playCard('Volo')">Volo</button>
+  </div>
+</span>
 <div *ngIf="canForceClose && shouldPlay && !default" class="u-flex-center" style="margin: 25px;">
   <button mat-raised-button color="accent" (click)="forceClose()">Chiamati Fuori</button>
 </div>

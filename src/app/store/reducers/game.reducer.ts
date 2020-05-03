@@ -4,11 +4,13 @@ import { Game } from 'src/app/commons/models/game.model';
 import * as GameActions from '../actions/game.actions';
 
 export interface GameState {
+  games: Game[],
   game: Game;
   currentPosition: number;
 };
 
 const initialState: GameState = {
+  games: null,
   game: null,
   currentPosition: null
 };
@@ -18,6 +20,9 @@ const gameReduce = createReducer(
   on(GameActions.loadGameCompleted, (state, { game }) => {
     return { ...state, game };
   }),
+  on(GameActions.unselectGame, (state, { }) => {
+    return { ...state, game: null };
+  }),
   on(GameActions.joinGame, (state, { position }) => {
     return { ...state, currentPosition: position };
   }),
@@ -26,6 +31,9 @@ const gameReduce = createReducer(
   }),
   on(GameActions.changeSeatCompleted, (state, { currentPosition }) => {
     return { ...state, currentPosition };
+  }),
+  on(GameActions.loadGamesCompleted, (state, { games }) => {
+    return { ...state, games };
   }),
 );
 
