@@ -34,7 +34,9 @@
         <input matInput type="text" formControlName="password" required>
         <mat-hint>Per evitare che un altro si sieda al tuo posto</mat-hint>
       </mat-form-field>
-      <button mat-raised-button color="primary" [disabled]="joinForm.invalid" (click)="join()">Siediti</button>
+      <div class="u-flex-center">
+        <button mat-raised-button color="primary" [disabled]="joinForm.invalid" (click)="join()">Siediti</button>
+      </div>
     </form>
 
   </mat-card-content>
