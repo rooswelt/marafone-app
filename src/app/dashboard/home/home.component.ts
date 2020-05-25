@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { combineLatest, of, Subject } from 'rxjs';
-import { filter, switchMap, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { Card, Game, Player, Sign, TeamNumber } from '../../commons/models/game.model';
 import { AlertService } from '../../commons/services/alert.service';
@@ -26,6 +26,7 @@ import {
   getRightPlayer,
   getTeamMatePlayer,
 } from '../../store/selectors/game.selectors';
+import { PositionSwitch } from './../../commons/models/game.model';
 
 @Component({
   selector: 'app-home',
@@ -54,6 +55,8 @@ export class HomeComponent {
 
   canForceClose: boolean;
 
+  positionSwitch: PositionSwitch;
+
   private _currentPosition: number;
 
   constructor(private store$: Store<AppState>, private alertService: AlertService) {
@@ -72,21 +75,26 @@ export class HomeComponent {
     this.store$.pipe(select(getGameWinner), takeUntil(this.unsubscribe$)).subscribe(winnerTeam => this.winnerTeam = winnerTeam);
     this.store$.pipe(select(getCanForceClose), takeUntil(this.unsubscribe$)).subscribe(canForceClose => this.canForceClose = canForceClose);
     this.store$.pipe(select(getCurrentPosition), takeUntil(this.unsubscribe$)).subscribe(currentPosition => this._currentPosition = currentPosition);
-    this.store$.pipe(
-      select(getPositionSwitch),
-      takeUntil(this.unsubscribe$),
-      filter(positionSwitch => !!positionSwitch),
-      filter((positionSwitch) => (positionSwitch.from == this._currentPosition && positionSwitch.force) || positionSwitch.to == this._currentPosition),
-      switchMap((positionSwitch) => {
-        const other = positionSwitch.from == this._currentPosition ? positionSwitch.to : positionSwitch.from;
-        const otherName = this.currentGame[`player_${other}_name`];
-        return combineLatest(of(other), this.alertService.showConfirmDialog('Conferma cambio posto', `Clicca sul pulsante di conferma per sederti al posto di ${otherName}`, true));
-      }),
-    ).subscribe(([newPosition, confirm]) => {
-      if (confirm) {
-        this.store$.dispatch(GameActions.changeSeat({ newPosition }));
+    this.store$.pipe(select(getPositionSwitch), takeUntil(this.unsubscribe$), tap(positionSwitch => {
+      if (positionSwitch && positionSwitch.accepted && positionSwitch.from == this._currentPosition) {
+        this.store$.dispatch(GameActions.changeSeatAccepted());
       }
-    });
+    })).subscribe(positionSwitch => this.positionSwitch = positionSwitch);
+    // this.store$.pipe(
+    //   select(getPositionSwitch),
+    //   takeUntil(this.unsubscribe$),
+    //   filter(positionSwitch => !!positionSwitch),
+    //   filter((positionSwitch) => (positionSwitch.from == this._currentPosition && positionSwitch.force) || positionSwitch.to == this._currentPosition),
+    //   switchMap((positionSwitch) => {
+    //     const other = positionSwitch.from == this._currentPosition ? positionSwitch.to : positionSwitch.from;
+    //     const otherName = this.currentGame[`player_${other}_name`];
+    //     return combineLatest(of(other), this.alertService.showConfirmDialog('Conferma cambio posto', `Clicca sul pulsante di conferma per sederti al posto di ${otherName}`, positionSwitch.force));
+    //   }),
+    // ).subscribe(([newPosition, confirm]) => {
+    //   if (confirm) {
+    //     this.store$.dispatch(GameActions.changeSeat({ newPosition }));
+    //   }
+    // });
   }
 
   ngOnDestroy() {
@@ -116,6 +124,22 @@ export class HomeComponent {
         this.store$.dispatch(GameActions.startNewGame())
       }
     })
+  }
+
+  proposeChangeSeat() {
+    this.store$.dispatch(GameActions.tryProposeChangeSeat());
+  }
+
+  confirmSwitch(newPosition) {
+    this.store$.dispatch(GameActions.changeSeat({ newPosition }));
+  }
+
+  refuseSwitch() {
+    this.store$.dispatch(GameActions.cancelChangeSeat());
+  }
+
+  leave() {
+    this.store$.dispatch(GameActions.leaveGame());
   }
 
   pointsForTakes = pointsForTakes

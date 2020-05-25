@@ -10,12 +10,20 @@ import { Game, NewGame } from 'src/app/commons/models/game.model';
 import { GameService } from 'src/app/commons/services/game.service';
 import { cardEquals, shuffleCards, sortHand } from 'src/app/commons/utils/card.util';
 import { getRightPosition, getStarter, hasCricca, hashString } from 'src/app/commons/utils/game.util';
+import { ChangeSeatComponent } from 'src/app/dashboard/home/change-seat/change-seat.component';
 
 import * as GameActions from '../actions/game.actions';
 import { AppState } from '../reducers';
 import { AlertService } from './../../commons/services/alert.service';
 import { PasswordDialogComponent } from './../../shared/components/password-dialog/password-dialog.component';
-import { getCurrentPosition, getCurrentTeam, getGame } from './../selectors/game.selectors';
+import {
+  getCurrentPlayer,
+  getCurrentPosition,
+  getCurrentTeam,
+  getGame,
+  getOthePlayers,
+  getPositionSwitch,
+} from './../selectors/game.selectors';
 
 
 @Injectable()
@@ -108,12 +116,14 @@ export class GameEffects {
     this.actions$.pipe(
       ofType(GameActions.joinGame),
       withLatestFrom(this.store$.pipe(select(getGame), filter(game => !!game), map(game => game.empty_seats))),
-      map(([{ position, name, password }, empty_seats]) => {
+      map(([{ position, name, password, change }, empty_seats]) => {
         let newGame: Partial<Game> = {};
         newGame[`player_${position}_name`] = name;
-        newGame[`player_${position}_password`] = hashString(password);
+        newGame[`player_${position}_password`] = change ? password : hashString(password);
         newGame.position_switch = null;
-        newGame.empty_seats = empty_seats - 1 | 0;
+        if (!change) {
+          newGame.empty_seats = empty_seats - 1 | 0;
+        }
         return GameActions.updateGame({ game: newGame });
       }),
       tap(() => this.router.navigate(["/home"]))
@@ -164,10 +174,109 @@ export class GameEffects {
         this.store$.pipe(select(getGame), filter(game => !!game)),
         this.store$.pipe(select(getCurrentPosition), filter(position => !!position))
       ),
+
+      // map(([{ position, name, password, change }, empty_seats]) => {
+      //   let newGame: Partial<Game> = {};
+      //   newGame[`player_${position}_name`] = name;
+      //   newGame[`player_${position}_password`] = change ? password : hashString(password);
+      //   newGame.position_switch = null;
+      //   if (!change) {
+      //     newGame.empty_seats = empty_seats - 1 | 0;
+      //   }
+      //   return GameActions.updateGame({ game: newGame });
+      // }),
+      // tap(() => this.router.navigate(["/home"]))
+
       switchMap(([{ newPosition }, game, currentPosition]) => {
         const oldName = game[`player_${currentPosition}_name`];
         const oldPassword = game[`player_${currentPosition}_password`];
-        return [GameActions.joinGame({ name: oldName, position: newPosition, password: oldPassword }), GameActions.changeSeatCompleted({ currentPosition: newPosition })]
+
+        const newName = game[`player_${newPosition}_name`];
+        const newPassword = game[`player_${newPosition}_password`];
+
+        let newGame: Partial<Game> = {};
+        newGame[`player_${currentPosition}_name`] = newName;
+        newGame[`player_${currentPosition}_password`] = newPassword;
+
+        newGame[`player_${newPosition}_name`] = oldName;
+        newGame[`player_${newPosition}_password`] = oldPassword;
+
+        newGame.position_switch = Object.assign({}, game.position_switch, { accepted: true });;
+
+        return [GameActions.rejoinGame({ position: newPosition }), GameActions.updateGame({ game: newGame })]
+
+        // const actions = [GameActions.rejoinGame({ position: newPosition})];
+        // if(game.position_switch){
+        //   const oldName = game[`player_${currentPosition}_name`];
+        //   const oldPassword = game[`player_${currentPosition}_password`];
+        // }
+        // return actions;
+        // return [GameActions.joinGame({ name: oldName, position: newPosition, password: oldPassword, change: true }), GameActions.changeSeatCompleted({ currentPosition: newPosition })]
+      }),
+    )
+  );
+
+  changeSeatCompleted$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.changeSeatAccepted),
+      withLatestFrom(this.store$.pipe(select(getPositionSwitch))),
+      switchMap(([_, positionSwitch]) => {
+        let newGame: Partial<Game> = {};
+        if (positionSwitch.accepted) {
+          newGame.position_switch = null;
+        }
+        // return GameActions.updateGame({ game: newGame });
+        return [GameActions.rejoinGame({ position: positionSwitch.to }), GameActions.updateGame({ game: newGame })]
+      })
+    )
+  )
+
+  tryProposeChangeSeat = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.tryProposeChangeSeat),
+      withLatestFrom(this.store$.pipe(select(getOthePlayers))),
+      switchMap(([_, otherPlayers]) => {
+        return this.dialog.open(ChangeSeatComponent, { data: { otherPlayers } }).afterClosed().pipe(
+          map(targetPlayer => {
+            if (targetPlayer) {
+              return GameActions.proposeChangeSeat({ targetPosition: targetPlayer.position, targetName: targetPlayer.name });
+            } else {
+              return GameActions.proposeChangeSeatCancelled();
+            }
+          })
+        )
+      })
+    )
+  );
+
+  proposeChangeSeat = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.proposeChangeSeat),
+      withLatestFrom(this.store$.pipe(select(getCurrentPlayer))),
+      map(([{ targetPosition, targetName }, currentPlayer]) => {
+        const game: Partial<Game> = {
+          position_switch: {
+            force: false,
+            from: currentPlayer.position,
+            from_name: currentPlayer.name,
+            to: targetPosition,
+            to_name: targetName,
+            accepted: false
+          }
+        }
+        return GameActions.updateGame({ game });
+      }),
+    )
+  );
+
+  refuseChange = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.cancelChangeSeat),
+      map(() => {
+        const game: Partial<Game> = {
+          position_switch: null
+        }
+        return GameActions.updateGame({ game });
       }),
     )
   );
@@ -176,6 +285,25 @@ export class GameEffects {
     this.actions$.pipe(
       ofType(GameActions.startNewGame),
       map(() => GameActions.giveCards({ oldStarter: null }))
+    )
+  );
+
+  leaveGame = createEffect(() =>
+    this.actions$.pipe(
+      ofType(GameActions.leaveGame),
+      withLatestFrom(
+        this.store$.pipe(select(getCurrentPosition), filter(position => !!position)),
+        this.store$.pipe(select(getGame), filter(game => !!game), map(game => game.empty_seats))
+      ),
+      map((position, empty_seats) => {
+        let newGame: Partial<Game> = {};
+        newGame[`player_${position}_name`] = null;
+        newGame[`player_${position}_password`] = null;
+        newGame.position_switch = null;
+        newGame.empty_seats = empty_seats + 1 | 0;
+        return GameActions.updateGame({ game: newGame });
+      }),
+      tap(() => this.router.navigate(["/home"]))
     )
   );
 
@@ -242,18 +370,20 @@ export class GameEffects {
       ofType(GameActions.setKing),
       withLatestFrom(
         this.store$.pipe(select(getGame), filter(game => !!game)),
-        this.store$.pipe(select(getCurrentTeam), filter(team => !!team)),
-        this.store$.pipe(select(getCurrentPosition), filter(position => !!position))
+        this.store$.pipe(select(getCurrentTeam)),
+        this.store$.pipe(select(getCurrentPosition)),
       ),
       map(([{ king }, game, currentTeam, currentPosition]) => {
         let newGame: Partial<Game> = { king };
-        if (hasCricca(king, game[`player_${currentPosition}_hand`])) {
-          if (currentTeam == 1) {
-            newGame.scores_1 = [...game.scores_1, game.scores_1[game.scores_1.length - 1] + 3];
-            newGame.scores_2 = [...game.scores_2, game.scores_2[game.scores_2.length - 1]];
-          } else {
-            newGame.scores_1 = [...game.scores_1, game.scores_1[game.scores_1.length - 1]];
-            newGame.scores_2 = [...game.scores_2, game.scores_2[game.scores_2.length - 1] + 3];
+        if (currentPosition && currentTeam) {
+          if (hasCricca(king, game[`player_${currentPosition}_hand`])) {
+            if (currentTeam == 1) {
+              newGame.scores_1 = [...game.scores_1, game.scores_1[game.scores_1.length - 1] + 3];
+              newGame.scores_2 = [...game.scores_2, game.scores_2[game.scores_2.length - 1]];
+            } else {
+              newGame.scores_1 = [...game.scores_1, game.scores_1[game.scores_1.length - 1]];
+              newGame.scores_2 = [...game.scores_2, game.scores_2[game.scores_2.length - 1] + 3];
+            }
           }
         }
         return GameActions.updateGame({ game: newGame });

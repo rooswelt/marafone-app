@@ -20,17 +20,25 @@ export const updateGame = createAction('[Game] Update game', props<{ game: Parti
 export const updateGameCompleted = createAction('[Game] Update game Completed');
 export const updateGameFailed = createAction('[Game] Update game Failed', props<{ error: any }>());
 
-export const joinGame = createAction('[Game] Join game', props<{ position: number, name: string, password: string }>());
+export const joinGame = createAction('[Game] Join game', props<{ position: number, name: string, password: string, change?: boolean }>());
 // export const joinGameCompleted = createAction('[Game] Join game Completed');
 // export const joinGameFailed = createAction('[Game] Join game Failed', props<{ error: any }>());
+
+export const leaveGame = createAction('[Game] Leave game');
 
 export const tryRejoinGame = createAction('[Game] Try Rejoin game', props<{ position: number }>());
 export const rejoinGameCancelled = createAction('[Game] Rejoin game cancelled');
 export const rejoinGameFailed = createAction('[Game] Rejoin game failed');
 export const rejoinGame = createAction('[Game] Rejoin game', props<{ position: number }>());
 
+export const tryProposeChangeSeat = createAction('[Game] Try Propose change seat');
+export const proposeChangeSeat = createAction('[Game] Propose change seat', props<{ targetPosition: number, targetName: string }>());
+export const proposeChangeSeatCancelled = createAction('[Game] Propose change seat cancelled');
+
+export const cancelChangeSeat = createAction('[Game] Cancel change seat');
+
 export const changeSeat = createAction('[Game] Change seat', props<{ newPosition: number }>());
-export const changeSeatCompleted = createAction('[Game] Change seat completed', props<{ currentPosition: number }>());
+export const changeSeatAccepted = createAction('[Game] Change seat accepted');
 // export const rejoinGameCompleted = createAction('[Game] Rejoin game Completed');
 // export const rejoinGameFailed = createAction('[Game] Rejoin game Failed', props<{ error: any }>());
 

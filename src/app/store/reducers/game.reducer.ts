@@ -29,9 +29,9 @@ const gameReduce = createReducer(
   on(GameActions.rejoinGame, (state, { position }) => {
     return { ...state, currentPosition: position };
   }),
-  on(GameActions.changeSeatCompleted, (state, { currentPosition }) => {
-    return { ...state, currentPosition };
-  }),
+  // on(GameActions.changeSeatCompleted, (state, { currentPosition }) => {
+  //   return { ...state, currentPosition };
+  // }),
   on(GameActions.loadGamesCompleted, (state, { games }) => {
     return { ...state, games };
   }),

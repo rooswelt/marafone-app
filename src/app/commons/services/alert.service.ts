@@ -43,7 +43,7 @@ export class AlertService {
     force: boolean = false
   ): Observable<boolean> {
     let dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      disableClose: false
+      disableClose: !force
     });
     dialogRef.componentInstance.title = title;
     dialogRef.componentInstance.confirmMessage = message;

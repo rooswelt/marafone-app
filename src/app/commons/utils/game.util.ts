@@ -51,7 +51,7 @@ export function gameWinner(game: Game): TeamNumber {
 }
 
 function isTeamWinner(teamNumber: TeamNumber, game: Game): boolean {
-  if (isGameStarted(game)) {
+  if (isGameReady(game)) {
     return (game[`scores_${teamNumber}`]?.length && game[`scores_${teamNumber}`][game[`scores_${teamNumber}`]?.length - 1] > 40);
   }
   return false;

@@ -122,3 +122,10 @@ export const getPositionSwitch = createSelector(
   getGame,
   (game: Game) => game ? game.position_switch : null
 );
+
+export const getOthePlayers = createSelector(
+  getRightPlayer,
+  getTeamMatePlayer,
+  getLeftPlayer,
+  (p1, p2, p3) => [p1, p2, p3]
+)

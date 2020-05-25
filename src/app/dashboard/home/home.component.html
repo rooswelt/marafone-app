@@ -19,6 +19,20 @@
     </div>
   </div>
 
+  <div *ngIf="positionSwitch">
+    <div class="finish u-flex-center">
+      <span class="finish__container u-center-text" *ngIf="positionSwitch.to != currentPlayer.position">
+        <h3>Cambio sedia richiesto - In attesa di accettazione</h3>
+        <h4>{{positionSwitch.from_name}} con {{positionSwitch.to_name}}</h4>
+      </span>
+      <span class="finish__container u-center-text" *ngIf="positionSwitch.to == currentPlayer.position">
+        <h3>Accetti il cambio sedia con {{positionSwitch.from_name}}?</h3>
+        <button mat-raised-button color="primary" (click)="confirmSwitch(positionSwitch.from)">Accetta</button>
+        <button mat-raised-button (click)="refuseSwitch()">Rifiuta</button>
+      </span>
+    </div>
+  </div>
+
   <div *ngIf="!gameReady">
     <div class="finish u-flex-center">
       <span class="finish__container u-flex-center">
@@ -68,7 +82,13 @@
       <h2>Hai {{winnerTeam == currentTeam ? 'vinto' : 'perso'}}!!</h2>
       <img style="height: 250px;"
         [src]="winnerTeam == currentTeam ? 'assets/images/winner.gif' : 'assets/images/looser.gif'">
-      <button mat-raised-button color="primary" (click)="restart()">Ricomincia una nuova partita</button>
+      <div class="u-flex-between">
+        <span>
+          <button mat-raised-button color="primary" (click)="restart()">Ricomincia una nuova partita</button>
+          <button mat-raised-button (click)="proposeChangeSeat()">Cambia posto</button>
+        </span>
+        <button mat-raised-button (click)="leave()">Lascia il tavolo</button>
+      </div>
     </div>
   </div>
 </ng-container>

@@ -55,7 +55,10 @@ export interface Game {
 export interface PositionSwitch {
   force: boolean;
   from: number;
+  from_name: string;
   to: number;
+  to_name: string;
+  accepted: boolean;
 }
 
 export interface Table {

@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Con chi vuoi cambiare sedia?</h1>
+<div mat-dialog-content>
+  <div *ngFor="let player of otherPlayers" class="seat">
+    {{player.name}} <button mat-raised-button color="primary" (click)="proposeSwitch(player)">Scambia</button>
+  </div>
+</div>
+<div mat-dialog-actions class="u-flex-between">
+  <button mat-button (click)="cancel()">Annulla</button>
+</div>

@@ -14,9 +14,9 @@
     mdePopoverTriggerOn="click" #popoverTrigger="mdePopoverTrigger">
     {{currentGame?.name}}&nbsp;
     <span *ngIf="currentPosition">
-      <span><strong>{{currentScore[currentScore.length-1]}}</strong></span>
+      <span *ngIf="currentScore?.length"><strong>{{currentScore[currentScore.length-1]}}</strong></span>
       &nbsp;-&nbsp;
-      <span><strong>{{opponentsScore[opponentsScore.length-1]}}</strong></span>
+      <span *ngIf="opponentsScore?.length"><strong>{{opponentsScore[opponentsScore.length-1]}}</strong></span>
     </span>
   </span>
 
